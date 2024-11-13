@@ -2,11 +2,11 @@ package model;
 
 import java.time.LocalDate;
 
-public class ContaConcorrente extends Conta {
+public class ContaCorrente extends Conta {
 	private double limite;
 	private LocalDate dataVencimento;
 	
-	public ContaConcorrente(int numero, String agencia, double saldo, Cliente cliente, double limite, LocalDate dataVencimento) {
+	public ContaCorrente(int numero, String agencia, double saldo, Cliente cliente, double limite, LocalDate dataVencimento) {
 		super(numero, agencia, saldo, cliente);
 		this.limite = limite;
 		this.dataVencimento = dataVencimento;
