@@ -10,6 +10,11 @@ public class Cliente extends Usuario {
 		this.senha = senha;
 	}
 	
+	
+	public String getSenha() {
+		return senha;
+	}
+
 	public double consultarSaldo() {
 		return 0;
 	}
