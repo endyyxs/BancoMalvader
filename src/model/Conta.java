@@ -12,6 +12,28 @@ public abstract class Conta {
 		this.saldo = saldo;
 		this.cliente = cliente;
 	}
+	
+	
+
+	public int getNumero() {
+		return numero;
+	}
+
+	public String getAgencia() {
+		return agencia;
+	}
+
+	public double getSaldo() {
+		return saldo;
+	}
+
+	public void setSaldo(double saldo) {
+		this.saldo = saldo;
+	}
+
+	public Cliente getCliente() {
+		return cliente;
+	}
 
 	public abstract void depositar(double valor);
 	
