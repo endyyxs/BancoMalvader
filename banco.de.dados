@@ -1,0 +1,103 @@
+create database bancomalvada;
+use bancomalvada;
+
+drop table usuario;
+drop table funcionario;
+drop table cliente;
+drop table endereco;
+create table usuario
+(
+id_usuario int auto_increment not null,
+nome varchar(100) not null,
+cpf varchar(11) not null unique,
+data_nascimento date not null,
+telefone varchar(15),
+tipo_usuario enum('funcionario', 'cliente') default 'cliente',
+senha varchar(50) not null,
+primary key(id_usuario)
+);
+
+create table funcionario
+(
+id_funcionario int auto_increment not null,
+codigo_funcionario varchar(20) not null unique,
+cargo varchar(50) not null,
+usuario_id  int not null,
+constraint fk_usuario_id_funcionario foreign key (usuario_id) references usuario (id_usuario),
+primary key (id_funcionario)
+);
+
+create table cliente
+(
+id_cliente int auto_increment not null,
+usuario_id int not null,
+constraint fk_usuario_id_cliente foreign key (usuario_id) references usuario (id_usuario),
+primary key (id_cliente)
+);
+
+create table endereco
+(
+id_endereco int auto_increment not null,
+cep varchar(10) not null,
+local varchar(100),
+numero_casa int,
+bairro varchar(50),
+cidade varchar(50),
+estado varchar(2),
+usuario_id int not null,
+constraint fk_usuario_id_endereco foreign key (usuario_id) references usuario (id_usuario),
+primary key (id_endereco)
+);
+
+create table conta
+(
+id_conta int auto_increment not null,
+numero_conta varchar(20) not null,
+agencia varchar(20) not null,
+saldo decimal (15, 2),
+tipo_conta enum('poupanca', 'corrente'),
+cliente_id int not null,
+constraint fk_cliente_id_conta foreign key (cliente_id) references cliente (id_cliente),
+primary key (id_conta)
+);
+
+create table conta_corrente
+(
+id_conta_corrente int auto_increment not null,
+limite decimal(15, 2),
+data_vencimento date not null,
+conta_id int not null,
+constraint fk_conta_id_corrente foreign key (conta_id) references conta (id_conta),
+primary key (id_conta_corrente)
+);
+
+create table conta_poupanca
+(
+id_conta_poupanca int auto_increment not null,
+taxa_rendimento decimal(5, 2),
+conta_id int not null,
+constraint fk_conta_id_poupanca foreign key (conta_id) references conta (id_conta),
+primary key (id_conta_poupanca)
+);
+
+create table transacao
+(
+id_transacao int auto_increment not null,
+tipo_transacao enum('deposito', 'saque', 'transferencia'),
+valor decimal(15, 2),
+data_hora timestamp not null,
+conta_id int not null,
+constraint fk_conta_id_transacao foreign key (conta_id) references conta (id_conta),
+primary key (id_transacao)
+);
+
+create table relatorio
+(
+id_relatorio int auto_increment not null,
+tipo_relatorio varchar(50) not null,
+data_geracao timestamp not null,
+conteudo text,
+funcionario_id int not null,
+constraint fk_funcionario_id_relatorio foreign key (funcionario_id) references funcionario (id_funcionario),
+primary key (id_relatorio)
+);
