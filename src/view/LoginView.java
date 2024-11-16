@@ -9,8 +9,8 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener; 
 import java.awt.event.ActionEvent; 
  
-public class LoginScreen extends JFrame { 
- public LoginScreen() { 
+public class LoginView extends JFrame { 
+ public LoginView() { 
   super("Banco Malvader"); 
   getContentPane().setBackground(new Color(252, 214, 247)); 
   this.setSize(500, 430); 
@@ -56,7 +56,7 @@ public class LoginScreen extends JFrame {
  
  public static void main(String[] args) { 
   SwingUtilities.invokeLater(() -> { 
-   LoginScreen frame = new LoginScreen(); 
+   LoginView frame = new LoginView(); 
    frame.setVisible(true); 
   }); 
  
