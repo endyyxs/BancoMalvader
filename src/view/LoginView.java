@@ -17,16 +17,19 @@ public class LoginView extends JFrame {
   this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
   getContentPane().setLayout(null); 
    
-  JLabel lblNewLabel = new JLabel("MENU PRINCIPAL"); 
-  lblNewLabel.setForeground(new Color(63, 63, 63)); 
-  lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 30)); 
-  lblNewLabel.setBounds(101, 73, 355, 26); 
-  getContentPane().add(lblNewLabel); 
+  JLabel telaprincipal = new JLabel("MENU PRINCIPAL"); 
+  telaprincipal.setForeground(new Color(63, 63, 63)); 
+  telaprincipal.setFont(new Font("Tahoma", Font.BOLD, 30)); 
+  telaprincipal.setBounds(101, 73, 355, 26); 
+  getContentPane().add(telaprincipal); 
    
   JButton botaofuncionario = new JButton("Funcionário"); 
   botaofuncionario.setBackground(new Color(255, 255, 255)); 
   botaofuncionario.addActionListener(new ActionListener() { 
    public void actionPerformed(ActionEvent e) { 
+	MenuFuncionarioView menufuncionario = new MenuFuncionarioView();
+	menufuncionario.setVisible(true);
+	dispose();
    } 
   }); 
   botaofuncionario.setFont(new Font("Tahoma", Font.BOLD, 12)); 
@@ -35,19 +38,26 @@ public class LoginView extends JFrame {
    
   JButton botaocliente = new JButton("Cliente"); 
   botaocliente.setBackground(new Color(255, 255, 255)); 
+  botaocliente.addActionListener(new ActionListener() { 
+   public void actionPerformed(ActionEvent e) { 
+	MenuClienteView menucliente = new MenuClienteView();
+	menucliente.setVisible(true);
+	dispose();
+    } 
+   }); 
   botaocliente.setFont(new Font("Tahoma", Font.BOLD, 12)); 
   botaocliente.setBounds(269, 200, 123, 50); 
   getContentPane().add(botaocliente); 
    
-  JButton btnNewButton_2 = new JButton("Sair"); 
-  btnNewButton_2.addActionListener(new ActionListener(){ 
+  JButton botaosair = new JButton("Sair"); 
+  botaosair.addActionListener(new ActionListener(){ 
    public void actionPerformed(ActionEvent e) { 
     System.exit(0); 
    } 
   }); 
-  btnNewButton_2.setFont(new Font("Tahoma", Font.BOLD, 12)); 
-  btnNewButton_2.setBounds(367, 334, 89, 23); 
-  getContentPane().add(btnNewButton_2); 
+  botaosair.setFont(new Font("Tahoma", Font.BOLD, 12)); 
+  botaosair.setBounds(367, 334, 89, 23); 
+  getContentPane().add(botaosair); 
   this.setLocationRelativeTo(null); 
    
    
