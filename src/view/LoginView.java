@@ -3,17 +3,13 @@ package view;
 import javax.swing.JFrame; 
 import javax.swing.SwingUtilities; 
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 import java.awt.Font;
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
 import java.awt.Color; 
 import javax.swing.JButton; 
 import java.awt.event.ActionListener; 
 import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants; 
  
 public class LoginView extends JFrame {
 	private JTextField usuario; 
