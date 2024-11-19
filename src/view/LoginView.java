@@ -10,10 +10,11 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener; 
 import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
+import javax.swing.JPasswordField;
  
 public class LoginView extends JFrame {
 	private JTextField usuario; 
-	private JTextField textField;
+	private JPasswordField senha;
 	
 	 public LoginView() { 
 	  super("Banco Malvader"); 
@@ -70,26 +71,23 @@ public class LoginView extends JFrame {
 	  getContentPane().add(botaosair); 
 	  
 	  
+	  JLabel entradausuario = new JLabel("Usuário");
+	  entradausuario.setFont(new Font("Tahoma", Font.PLAIN, 13));
+	  entradausuario.setBounds(76, 162, 46, 14);
+	  getContentPane().add(entradausuario);
 	  usuario = new JTextField();
 	  usuario.setBounds(76, 181, 307, 20);
 	  getContentPane().add(usuario);
 	  usuario.setColumns(10);
 	  
-	  JLabel lblNewLabel = new JLabel("Usuário");
-	  lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 13));
-	  lblNewLabel.setBounds(76, 162, 46, 14);
-	  getContentPane().add(lblNewLabel);
 	  
-	  textField = new JTextField();
-	  textField.setColumns(10);
-	  textField.setBounds(76, 241, 307, 20);
-	  getContentPane().add(textField);
-	  
-	  
-	  JLabel lblSenha = new JLabel("Senha");
-	  lblSenha.setFont(new Font("Tahoma", Font.PLAIN, 13));
-	  lblSenha.setBounds(76, 224, 46, 14);
-	  getContentPane().add(lblSenha);
+	  JLabel entradasenha = new JLabel("Senha");
+	  entradasenha.setFont(new Font("Tahoma", Font.PLAIN, 13));
+	  entradasenha.setBounds(76, 224, 46, 14);
+	  getContentPane().add(entradasenha);
+	  senha = new JPasswordField();
+	  senha.setBounds(76, 241, 307, 20);
+	  getContentPane().add(senha);
 	  
 	 } 
 	  

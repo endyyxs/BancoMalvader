@@ -22,7 +22,7 @@ public class MenuClienteView extends JFrame {
 		  JLabel menucliente = new JLabel("MENU CLIENTE");
 		  menucliente.setForeground(new Color(63, 63, 63)); 
 		  menucliente.setFont(new Font("Tahoma", Font.BOLD, 30));
-		  menucliente.setBounds(115, 33, 307, 34);
+		  menucliente.setBounds(120, 32, 307, 34);
 		  getContentPane().add(menucliente);
 		  
 		  JButton saldo = new JButton("Saldo");
