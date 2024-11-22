@@ -1,4 +1,4 @@
-package dao;
+package DAO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import util.DBUtil;
 import model.Cliente;
 import util.DBUtil;
 
@@ -18,10 +19,10 @@ public class ClienteDAO {
 		this.conexao = DBUtil.getConnection();
 	}
 	
-	public double consultarSaldo(int clienteId) {
+	public double consultarSaldo(int ClienteId) {
 	    String sql = "SELECT saldo FROM cliente WHERE id = ?";
 	    try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
-	        stmt.setInt(1, clienteId);
+	        stmt.setInt(1, ClienteId);
 	        ResultSet rs = stmt.executeQuery();
 	        if (rs.next()) {
 	            return rs.getDouble("saldo");
