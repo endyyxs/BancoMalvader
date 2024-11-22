@@ -1,4 +1,4 @@
-package DAO;
+package dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,13 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.Cliente;
+import util.DBUtil;
 
 public class ClienteDAO {
 	
 	private Connection conexao;
 	
 	public ClienteDAO() {
-		this.conexao = Conexao.getConnection();
+		this.conexao = DBUtil.getConnection();
 	}
 	
 	public double consultarSaldo(int clienteId) {
