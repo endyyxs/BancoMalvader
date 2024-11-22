@@ -7,7 +7,7 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.Color; 
 import javax.swing.JButton; 
-import java.awt.event.ActionListener; 
+import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
  
 public class LoginView extends JFrame {
