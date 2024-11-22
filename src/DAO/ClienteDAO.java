@@ -7,8 +7,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import Util.DBUtil;
+import util.DBUtil;
 import model.Cliente;
+import util.DBUtil;
 
 public class ClienteDAO {
 	
