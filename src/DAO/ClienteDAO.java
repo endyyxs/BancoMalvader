@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import Util.DBUtil;
 import model.Cliente;
 
 public class ClienteDAO {
@@ -14,13 +15,13 @@ public class ClienteDAO {
 	private Connection conexao;
 	
 	public ClienteDAO() {
-		this.conexao = Conexao.getConnection();
+		this.conexao = DBUtil.getConnection();
 	}
 	
-	public double consultarSaldo(int clienteId) {
+	public double consultarSaldo(int ClienteId) {
 	    String sql = "SELECT saldo FROM cliente WHERE id = ?";
 	    try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
-	        stmt.setInt(1, clienteId);
+	        stmt.setInt(1, ClienteId);
 	        ResultSet rs = stmt.executeQuery();
 	        if (rs.next()) {
 	            return rs.getDouble("saldo");
