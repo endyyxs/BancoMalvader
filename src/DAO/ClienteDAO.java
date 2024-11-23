@@ -20,7 +20,7 @@ public class ClienteDAO {
 	}
 	
 	public double consultarSaldo(Cliente cliente) {
-	    String sql = "SELECT saldo FROM cliente WHERE id = ?";
+	    String sql = "SELECT saldo FROM conta WHERE id = ?";
 	    try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
 	        stmt.setInt(1, cliente.getId());
 	        ResultSet rs = stmt.executeQuery();
@@ -35,7 +35,7 @@ public class ClienteDAO {
 	}
 	
 	public boolean depositar(Cliente cliente, double valor) {
-	    String sql = "UPDATE cliente SET saldo = saldo + ? WHERE id = ?";
+	    String sql = "UPDATE conta SET saldo = saldo + ? WHERE id = ?";
 	    try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
 	        stmt.setDouble(1, valor);
 	        stmt.setInt(2, cliente.getId());
@@ -48,7 +48,7 @@ public class ClienteDAO {
 	}
 
 	public boolean sacar(Cliente cliente, double valor) {
-	    String sql = "UPDATE cliente SET saldo = saldo - ? WHERE id = ? AND saldo >= ?";
+	    String sql = "UPDATE conta SET saldo = saldo - ? WHERE id = ? AND saldo >= ?";
 	    try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
 	        stmt.setDouble(1, valor);
 	        stmt.setInt(2, cliente.getId());
@@ -82,7 +82,7 @@ public class ClienteDAO {
 	}
 
 	public double consultarLimite(Cliente cliente) {
-	    String sql = "SELECT limite FROM cliente WHERE id = ?";
+	    String sql = "SELECT limite FROM conta_corrente WHERE id = ?";
 	    try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
 	        stmt.setInt(1, cliente.getId());
 	        ResultSet rs = stmt.executeQuery();
