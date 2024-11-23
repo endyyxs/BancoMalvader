@@ -5,6 +5,7 @@ drop table usuario;
 drop table funcionario;
 drop table cliente;
 drop table endereco;
+
 create table usuario
 (
 id_usuario int auto_increment not null,
@@ -101,3 +102,27 @@ funcionario_id int not null,
 constraint fk_funcionario_id_relatorio foreign key (funcionario_id) references funcionario (id_funcionario),
 primary key (id_relatorio)
 );
+
+DELIMITER $$
+create trigger salvar_deposito
+after update on conta
+for each row
+begin
+if new.saldo > ond.saldo then
+insert into transacoes (id_conta, tipo, valor)
+values (new.id_conta, 'deposito', new.saldo - new.saldo);
+end if;
+end $$
+DELIMITER ;
+
+DELIMITER $$
+create trigger salvar_saque
+after update on conta
+for each row
+begin
+if new.saldo < old.saldo then
+insert into transacoes (id_conta, tipo, valor)
+values (new.id_conta, 'saque', old.saldo - new.saldo);
+end if;
+end $$
+DELIMITER ;
