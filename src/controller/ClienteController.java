@@ -9,8 +9,8 @@ public class ClienteController {
 		this.DAO = new ClienteDAO();
 	}
 	
-	public double consultarSaldo(int ClienteId) {
-		return DAO.consultarSaldo(ClienteId);
+	public double consultarSaldo(int clienteId) {
+		return DAO.consultarSaldo(clienteId);
 	}
 	
 	public void depositar(int clienteId, double valor) {
