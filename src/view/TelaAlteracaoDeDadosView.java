@@ -52,7 +52,7 @@ public class TelaAlteracaoDeDadosView extends JFrame {
         voltarButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 MenuFuncionarioView menuFuncionarioView = new MenuFuncionarioView();
-                menuFuncionarioView.setVisible(false);
+                menuFuncionarioView.setVisible(true);
                 dispose(); 
             }
         });
