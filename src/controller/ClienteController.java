@@ -19,7 +19,6 @@ public class ClienteController {
 			System.out.println("Erro ao consultar saldo: " + e.getMessage());
 			return 0;
 		}
-		
 	}
 	
 	public void depositar(Cliente cliente, double valor) {
