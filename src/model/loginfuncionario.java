@@ -5,12 +5,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class LoginModel {
+import util.DBUtil;
+
+public class loginfuncionario {
     
     public boolean validarLogin(String usuario, String senha) {
         String sql = "SELECT * FROM usuarios WHERE usuario = ? AND senha = ?";
         
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
              
             stmt.setString(1, usuario);
