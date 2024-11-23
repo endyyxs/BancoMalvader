@@ -19,10 +19,10 @@ public class ClienteDAO {
 		this.conexao = DBUtil.getConnection();
 	}
 	
-	public double consultarSaldo(int ClienteId) {
+	public double consultarSaldo(Cliente cliente) {
 	    String sql = "SELECT saldo FROM cliente WHERE id = ?";
 	    try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
-	        stmt.setInt(1, ClienteId);
+	        stmt.setInt(1, cliente.getId());
 	        ResultSet rs = stmt.executeQuery();
 	        if (rs.next()) {
 	            return rs.getDouble("saldo");
@@ -34,11 +34,11 @@ public class ClienteDAO {
 	    return 0;
 	}
 	
-	public boolean depositar(int clienteId, double valor) {
+	public boolean depositar(Cliente cliente, double valor) {
 	    String sql = "UPDATE cliente SET saldo = saldo + ? WHERE id = ?";
 	    try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
 	        stmt.setDouble(1, valor);
-	        stmt.setInt(2, clienteId);
+	        stmt.setInt(2, cliente.getId());
 	        stmt.executeUpdate();
 	        return true;
 	    } catch (SQLException e) {
@@ -47,11 +47,11 @@ public class ClienteDAO {
 	    }
 	}
 
-	public boolean sacar(int clienteId, double valor) {
+	public boolean sacar(Cliente cliente, double valor) {
 	    String sql = "UPDATE cliente SET saldo = saldo - ? WHERE id = ? AND saldo >= ?";
 	    try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
 	        stmt.setDouble(1, valor);
-	        stmt.setInt(2, clienteId);
+	        stmt.setInt(2, cliente.getId());
 	        stmt.setDouble(3, valor);
 	        int rowsAffected = stmt.executeUpdate();
 	        return rowsAffected > 0;
@@ -61,11 +61,11 @@ public class ClienteDAO {
 	    }
 	}
 
-	public List<String> consultarExtrato(int clienteId) {
+	public List<String> consultarExtrato(Cliente cliente) {
 	    String sql = "SELECT data, tipo, valor FROM transacoes WHERE cliente_id = ? ORDER BY data DESC";
 	    List<String> extrato = new ArrayList<>();
 	    try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
-	        stmt.setInt(1, clienteId);
+	        stmt.setInt(1, cliente.getId());
 	        ResultSet rs = stmt.executeQuery();
 	        while (rs.next()) {
 	            String linha = String.format("Data: %s, Tipo: %s, Valor: R$ %.2f",
@@ -81,10 +81,10 @@ public class ClienteDAO {
 	    return extrato;
 	}
 
-	public double consultarLimite(int clienteId) {
+	public double consultarLimite(Cliente cliente) {
 	    String sql = "SELECT limite FROM cliente WHERE id = ?";
 	    try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
-	        stmt.setInt(1, clienteId);
+	        stmt.setInt(1, cliente.getId());
 	        ResultSet rs = stmt.executeQuery();
 	        if (rs.next()) {
 	            return rs.getDouble("limite");
@@ -95,6 +95,4 @@ public class ClienteDAO {
 	    }
 	    return 0;
 	}
-
-	
 }
