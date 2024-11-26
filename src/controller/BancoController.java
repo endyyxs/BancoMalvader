@@ -1,16 +1,24 @@
 package controller;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import dao.ContaCorrenteDAO;
+import dao.ContaDAO;
 import dao.FuncionarioDAO;
+import model.Cliente;
 import model.Conta;
+import model.ContaCorrente;
+import model.ContaPoupanca;
 import model.Funcionario;
 
 public class BancoController {
     private List<Conta> contas; // Lista de contas em memória
     private List<Funcionario> funcionarios; // Lista de funcionários em memória
     private FuncionarioDAO funcionarioDAO;
+    private ContaDAO contaDAO;
 
     // Construtor recebe a conexão com o banco de dados
     public BancoController(Connection connection) {
@@ -19,12 +27,39 @@ public class BancoController {
         this.funcionarioDAO = new FuncionarioDAO(connection);
     }
 
-    // Adicionar uma conta na lista local
-    public void adicionarConta(Conta conta) {
-        this.contas.add(conta);
-        System.out.println("Conta adicionada localmente: " + conta.getNumero());
-    }
+    public void adicionarConta(Conta conta, Cliente cliente) {
+        try {
+            // Verificar se a conta já existe localmente
+        	if (contas.stream().anyMatch(c -> c.getNumero() == conta.getNumero())) {
+        	    System.err.println("Conta já existe localmente: " + conta.getNumero());
+        	    return;
+        	}
 
+
+            boolean sucesso;
+            // Chama o método adequado para o tipo de conta
+            if (conta instanceof ContaCorrente) {
+                sucesso = contaDAO.cadastrarContaCorrente((ContaCorrente) conta, cliente);
+            } else if (conta instanceof ContaPoupanca) {
+                sucesso = contaDAO.cadastrarContaPoupanca((ContaPoupanca) conta, cliente);
+            } else {
+                System.err.println("Tipo de conta desconhecido.");
+                return;
+            }
+
+            // Verifica se o cadastro foi bem-sucedido
+            if (sucesso) {
+                // Adicionar na lista local caso a conta tenha sido cadastrada com sucesso
+                this.contas.add(conta);
+                System.out.println("Conta adicionada localmente e salva no banco: " + conta.getNumero());
+            } else {
+                System.err.println("Falha ao salvar conta no banco.");
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao adicionar conta: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
     // Remover uma conta da lista local
     public void removerConta(int numeroConta) {
         contas.removeIf(c -> c.getNumero() == numeroConta);

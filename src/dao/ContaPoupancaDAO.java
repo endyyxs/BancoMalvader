@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 import model.Cliente;
+import model.Conta;
+import model.ContaCorrente;
 import model.ContaPoupanca;
 import util.DBUtil;
 
@@ -33,7 +35,7 @@ public class ContaPoupancaDAO extends ContaDAO {
 
                     // Buscar o cliente associado
                     ClienteDAO clienteDAO = new ClienteDAO();
-                    Cliente cliente = clienteDAO.buscarClientePorId(idCliente);
+                    Cliente cliente = clienteDAO.buscarPorId(idCliente);
 
                     return new ContaPoupanca(numero, agencia, saldo, cliente, taxaRendimento);
                 } else {
@@ -85,5 +87,11 @@ public class ContaPoupancaDAO extends ContaDAO {
     public List<String> consultarExtrato(Cliente cliente) {
         return super.consultarExtrato(cliente);
     }
+
+	@Override
+	public void cadastrarConta(Conta conta, Cliente cliente) {
+		// TODO Auto-generated method stub
+	}
+    
 }
 
