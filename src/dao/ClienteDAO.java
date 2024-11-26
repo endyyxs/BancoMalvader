@@ -78,4 +78,9 @@ public class ClienteDAO {
             stmt.executeUpdate();
         }
     }
+
+	public static Cliente autenticarSenha(String senha) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
