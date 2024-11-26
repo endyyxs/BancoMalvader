@@ -84,6 +84,48 @@ public class CadastroContaCorrenteView extends JFrame {
         // Botão de Enviar
         JButton enviarButton = new JButton("Enviar");
         enviarButton.setBounds(200, 700, 100, 30);
+        enviarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Coletar os dados inseridos nos campos
+                String agencia = agenciaField.getText();
+                String numeroConta = numeroContaField.getText();
+                String nomeCliente = nomeClienteField.getText();
+                String cpf = cpfField.getText();
+                String dataNascimento = dataNascimentoField.getText();
+                String telefone = telefoneField.getText();
+                String endereco = enderecoField.getText();
+                String cep = cepField.getText();
+                String local = localField.getText();
+                String numeroCasa = numeroCasaField.getText();
+                String bairro = bairroField.getText();
+                String cidade = cidadeField.getText();
+                String estado = estadoField.getText();
+                String senha = new String(senhaField.getPassword());
+                String limiteContaCorrente = limiteContaCorrenteField.getText();
+                String dataVencimento = dataVencimentoField.getText();
+
+                // Validação dos campos obrigatórios (exemplo)
+                if (agencia.isEmpty() || numeroConta.isEmpty() || nomeCliente.isEmpty() || cpf.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Por favor, preencha todos os campos obrigatórios!");
+                    return;
+                }
+
+                // Verificação se limite é um número válido
+                try {
+                    Double.parseDouble(limiteContaCorrente);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "O limite da conta corrente deve ser um valor numérico válido.");
+                    return;
+                }
+
+                // Exemplo de ação após envio
+                JOptionPane.showMessageDialog(null, "Cadastro realizado com sucesso!");
+
+                // Aqui você pode realizar outras ações, como salvar os dados no banco de dados, etc.
+                // BancoDeDados.salvarCadastro(agencia, numeroConta, nomeCliente, cpf, dataNascimento, telefone, endereco, cep, local, numeroCasa, bairro, cidade, estado, senha, limiteContaCorrente, dataVencimento);
+            }
+        });
         getContentPane().add(enviarButton);
 
         // Botão de Voltar
@@ -91,6 +133,7 @@ public class CadastroContaCorrenteView extends JFrame {
         voltarButton.setBounds(320, 700, 100, 30);
         voltarButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                // Voltar para o menu do funcionário
                 MenuFuncionarioView menuFuncionarioView = new MenuFuncionarioView();
                 menuFuncionarioView.setVisible(true);
                 dispose(); // Fecha a janela atual
