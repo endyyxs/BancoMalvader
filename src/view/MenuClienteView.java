@@ -1,6 +1,10 @@
 package view;
 
 import javax.swing.*;
+
+import model.Cliente;
+import model.Conta;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -63,6 +67,7 @@ public class MenuClienteView extends JFrame {
         saque.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+            	solicitarSenhaSaque("Saque");
                 abrirTelaSaque(); // Abre a tela de saque
             }
         });
@@ -92,7 +97,24 @@ public class MenuClienteView extends JFrame {
         // Se a senha estiver correta, abre a tela correspondente
         if (senha.equals("1234")) { // Exemplo de senha, substitua pela sua lógica
             if (operacao.equals("Saldo")) {
-                abrirTelaSaldo(); // Abre a tela de saldo
+                abrirTelaSaldo(null); // Abre a tela de saldo
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Senha incorreta!", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void solicitarSenhaSaque(String operacao) {
+        JPasswordField passwordField = new JPasswordField(10);
+        JOptionPane.showConfirmDialog(this, passwordField, "Digite sua senha para " + operacao, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        // Aqui, você pode adicionar lógica para verificar a senha, mas como você pediu apenas a navegação, estou mantendo simples.
+        String senha = new String(passwordField.getPassword());
+
+        // Se a senha estiver correta, abre a tela correspondente
+        if (senha.equals("1234")) { // Exemplo de senha, substitua pela sua lógica
+            if (operacao.equals("Saque")) {
+                abrirTelaSaque(); // Abre a tela de saldo
             }
         } else {
             JOptionPane.showMessageDialog(this, "Senha incorreta!", "Erro", JOptionPane.ERROR_MESSAGE);
@@ -100,15 +122,11 @@ public class MenuClienteView extends JFrame {
     }
 
     // Método para abrir a tela de saldo
-    private void abrirTelaSaldo() {
-        // Apenas cria uma nova janela de saldo
-        JFrame telaSaldo = new JFrame("Saldo");
-        telaSaldo.setSize(400, 300);
-        telaSaldo.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        telaSaldo.setLocationRelativeTo(null);
-        JLabel label = new JLabel("Tela de Saldo", SwingConstants.CENTER);
-        telaSaldo.add(label);
-        telaSaldo.setVisible(true);
+    private void abrirTelaSaldo(Conta conta) {
+    	double saldo = conta.consultarSaldo();
+    	
+    	JOptionPane.showMessageDialog(this, "Saldo na conta: R$ " + saldo);
+    	       
     }
 
     // Método para abrir a tela de depósito
@@ -147,13 +165,22 @@ public class MenuClienteView extends JFrame {
     // Método para abrir a tela de saque
     private void abrirTelaSaque() {
         // Apenas cria uma nova janela de saque
-        JFrame telaSaque = new JFrame("Saque");
-        telaSaque.setSize(400, 300);
-        telaSaque.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        telaSaque.setLocationRelativeTo(null);
-        JLabel label = new JLabel("Tela de Saque", SwingConstants.CENTER);
-        telaSaque.add(label);
-        telaSaque.setVisible(true);
+	String valorsaque = JOptionPane.showInputDialog(this, "Digite o valor que deseja sacar:");
+	        
+	        if (valorsaque != null) {
+	            try {
+	                double valorsacar = Double.parseDouble(valorsaque);
+	
+	                if (valorsacar > 0) {
+	                    // Aqui você pode adicionar lógica para registrar o valor no banco de dados
+	                    JOptionPane.showMessageDialog(this, "Valor do saque: R$ " + valorsacar);
+	                } else {
+	                    JOptionPane.showMessageDialog(this, "O valor deve ser maior que 0!", "Erro", JOptionPane.ERROR_MESSAGE);
+	                }
+	            } catch (NumberFormatException ex) {
+	                JOptionPane.showMessageDialog(this, "Valor inválido!", "Erro", JOptionPane.ERROR_MESSAGE);
+	            }
+	        }
     }
 
     public static void main(String[] args) {
