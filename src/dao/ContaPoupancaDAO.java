@@ -11,14 +11,14 @@ import model.ContaPoupanca;
 import util.DBUtil;
 
 public class ContaPoupancaDAO extends ContaDAO {
-	
-	private Connection conexao;
-	
-	public ContaPoupancaDAO() {
-		this.conexao = DBUtil.getConnection();
-	}
-	
-	// Buscar conta poupança no banco de dados
+    
+    private Connection conexao;
+    
+    public ContaPoupancaDAO() {
+        this.conexao = DBUtil.getConnection();
+    }
+    
+    // Buscar conta poupança no banco de dados
     public ContaPoupanca buscarContaPoupanca(int numeroConta) throws SQLException {
         String sql = "SELECT * FROM contas_poupanca WHERE numero = ?";
         try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
@@ -29,8 +29,13 @@ public class ContaPoupancaDAO extends ContaDAO {
                     double taxaRendimento = rs.getDouble("taxa_rendimento");
                     int numero = rs.getInt("numero");
                     String agencia = rs.getString("agencia");
-                    int idCliente = rs.getInt("id_cliente"); // Para buscar o cliente
-                    return new ContaPoupanca(numero, agencia, saldo, null, taxaRendimento); // Cliente é null aqui, pode ser buscado depois
+                    int idCliente = rs.getInt("id_cliente");
+
+                    // Buscar o cliente associado
+                    ClienteDAO clienteDAO = new ClienteDAO();
+                    Cliente cliente = clienteDAO.buscarClientePorId(idCliente);
+
+                    return new ContaPoupanca(numero, agencia, saldo, cliente, taxaRendimento);
                 } else {
                     return null; // Conta não encontrada
                 }
@@ -38,30 +43,47 @@ public class ContaPoupancaDAO extends ContaDAO {
         }
     }
 
-	@Override
-	public double consultarSaldo(Cliente cliente) {
-		// TODO Auto-generated method stub
-		return super.consultarSaldo(cliente);
-	}
+    // Salvar conta poupança no banco de dados
+    public void salvar(ContaPoupanca contaPoupanca) throws SQLException {
+        // Garantir que o cliente foi salvo antes
+        if (contaPoupanca.getCliente().getId() == 0) {
+            ClienteDAO clienteDAO = new ClienteDAO();
+            clienteDAO.salvar(contaPoupanca.getCliente());
+        }
 
-	@Override
-	public boolean depositar(Cliente cliente, double valor) {
-		// TODO Auto-generated method stub
-		return super.depositar(cliente, valor);
-	}
+        String sql = "INSERT INTO contas_poupanca (numero, agencia, saldo, taxa_rendimento, id_cliente) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            stmt.setInt(1, contaPoupanca.getNumero());
+            stmt.setString(2, contaPoupanca.getAgencia());
+            stmt.setDouble(3, contaPoupanca.getSaldo());
+            stmt.setDouble(4, contaPoupanca.getTaxaRendimento());
+            stmt.setInt(5, contaPoupanca.getCliente().getId());
 
-	@Override
-	public boolean sacar(Cliente cliente, double valor) {
-		// TODO Auto-generated method stub
-		return super.sacar(cliente, valor);
-	}
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new SQLException("Erro ao salvar a conta poupança no banco de dados.", e);
+        }
+    }
 
-	@Override
-	public List<String> consultarExtrato(Cliente cliente) {
-		// TODO Auto-generated method stub
-		return super.consultarExtrato(cliente);
-	}
-	
-	
+    @Override
+    public double consultarSaldo(Cliente cliente) {
+        return super.consultarSaldo(cliente);
+    }
 
+    @Override
+    public boolean depositar(Cliente cliente, double valor) {
+        return super.depositar(cliente, valor);
+    }
+
+    @Override
+    public boolean sacar(Cliente cliente, double valor) {
+        return super.sacar(cliente, valor);
+    }
+
+    @Override
+    public List<String> consultarExtrato(Cliente cliente) {
+        return super.consultarExtrato(cliente);
+    }
 }
+

@@ -1,12 +1,18 @@
 package view;
 
 import javax.swing.*;
+import controller.ContaPoupancaController;
+import model.Cliente;
+import model.ContaPoupanca;
+import dao.ContaPoupancaDAO;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class CadastroContaPoupancaView extends JFrame {
+    private static final long serialVersionUID = 1L;
 
+   
     private JTextField agenciaField;
     private JTextField numeroContaField;
     private JTextField nomeClienteField;
@@ -24,10 +30,10 @@ public class CadastroContaPoupancaView extends JFrame {
 
     public CadastroContaPoupancaView() {
         super("Cadastro Conta Poupança");
-        
+
         getContentPane().setBackground(new Color(252, 214, 247)); // cor de fundo
         this.setSize(600, 650); // tamanho da tela
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // operação de fechamento
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // operação de fechamento
         getContentPane().setLayout(null); // layout nulo para posicionamento absoluto
         this.setLocationRelativeTo(null); // centraliza na tela
 
@@ -51,22 +57,60 @@ public class CadastroContaPoupancaView extends JFrame {
         addLabeledField("Bairro:", 50, 460, 150, bairroField = new JTextField());
         addLabeledField("Cidade:", 50, 500, 150, cidadeField = new JTextField());
         addLabeledField("Estado:", 50, 540, 150, estadoField = new JTextField());
-        
+
         // Campo para a senha
         JLabel senhaLabel = new JLabel("Senha da Conta:");
         senhaLabel.setBounds(50, 580, 150, 20);
         getContentPane().add(senhaLabel);
-        
+
         senhaField = new JPasswordField();
         senhaField.setBounds(200, 580, 200, 20);
         getContentPane().add(senhaField);
 
-        // Botão de Enviar
+        // Botão Enviar
         JButton enviarButton = new JButton("Enviar");
         enviarButton.setBounds(200, 620, 100, 30);
+        enviarButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Capturando os dados dos campos
+                String agencia = agenciaField.getText();
+                String numeroConta = numeroContaField.getText();
+                String nomeCliente = nomeClienteField.getText();
+                String cpf = cpfField.getText();
+                String dataNascimento = dataNascimentoField.getText();
+                String telefone = telefoneField.getText();
+                String endereco = enderecoField.getText();
+                String cep = cepField.getText();
+                String local = localField.getText();
+                String numeroCasa = numeroCasaField.getText();
+                String bairro = bairroField.getText();
+                String cidade = cidadeField.getText();
+                String estado = estadoField.getText();
+                String senha = new String(senhaField.getPassword());
+       
+                // Criando o objeto Cliente (modelo) com os dados inseridos
+                Cliente cliente = new Cliente(nomeCliente, cpf, dataNascimento, telefone, endereco, cep, local, numeroCasa, bairro, cidade, estado);
+
+                // Criando a conta poupança
+                ContaPoupanca contaPoupanca = new ContaPoupanca(
+                    Integer.parseInt(numeroConta),   // Convertendo o número da conta de String para int
+                    agencia,                         // Agência da conta
+                    0.0,                             // Saldo inicial da conta
+                    cliente,                         // Cliente associado à conta
+                    0.05                              // Taxa de rendimento da conta
+                );
+
+                // Instanciando o controller de conta poupança com o DAO
+                ContaPoupancaDAO contaPoupancaDAO = new ContaPoupancaDAO();
+                ContaPoupancaController contaPoupancaController = new ContaPoupancaController(contaPoupancaDAO);
+
+                // Chamando o controller para salvar a conta no banco
+                contaPoupancaController.salvarContaPoupanca(contaPoupanca);
+            }
+        });
         getContentPane().add(enviarButton);
 
-        // Botão de Voltar
+        // Botão Voltar
         JButton voltarButton = new JButton("Voltar");
         voltarButton.setBounds(320, 620, 100, 30);
         voltarButton.addActionListener(new ActionListener() {
