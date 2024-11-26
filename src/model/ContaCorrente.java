@@ -34,4 +34,19 @@ public class ContaCorrente extends Conta {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+	public String getSenha() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public double getLimiteContaCorrente() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public String getDataVencimento() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
