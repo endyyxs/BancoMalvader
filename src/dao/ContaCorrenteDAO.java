@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 import model.Cliente;
+import model.Conta;
+import model.ContaCorrente;
 import util.DBUtil;
 
 public class ContaCorrenteDAO extends ContaDAO {
@@ -55,5 +57,12 @@ public class ContaCorrenteDAO extends ContaDAO {
 			// TODO Auto-generated method stub
 			return super.consultarExtrato(cliente);
 		}
+
+		@Override
+		public void cadastrarConta(Conta conta, Cliente cliente) {
+			// TODO Auto-generated method stub
+		}
+
+
 		
 }
