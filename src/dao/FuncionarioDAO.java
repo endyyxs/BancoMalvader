@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import model.Funcionario;
+import util.DBUtil;
 
 public class FuncionarioDAO {
     private Connection connection;
@@ -15,17 +16,23 @@ public class FuncionarioDAO {
 
     // Método para cadastrar um novo funcionário
     public void cadastrarFuncionario(Funcionario funcionario) throws SQLException {
-        String sql = "INSERT INTO funcionario (id, nome, cpf, data_nascimento, telefone, codigo_funcionario, cargo, senha) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, funcionario.getId());
-            stmt.setString(2, funcionario.getNome());
-            stmt.setString(3, funcionario.getCpf());
-            stmt.setDate(4, Date.valueOf(funcionario.getDataNascimento()));
-            stmt.setString(5, funcionario.getTelefone());
-            stmt.setString(6, funcionario.getCodigoFuncionario());
-            stmt.setString(7, funcionario.getCargo());
-            stmt.setString(8, funcionario.getSenha());
+        String sql = "INSERT INTO funcionario (nome, cpf, data_nascimento, telefone, codigo_funcionario, cargo, senha) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, funcionario.getNome());
+            stmt.setString(2, funcionario.getCpf());
+            stmt.setDate(3, Date.valueOf(funcionario.getDataNascimento()));
+            stmt.setString(4, funcionario.getTelefone());
+            stmt.setString(5, funcionario.getCodigoFuncionario());
+            stmt.setString(6, funcionario.getCargo());
+            stmt.setString(7, funcionario.getSenha());
             stmt.executeUpdate();
+
+            // Obter o ID gerado automaticamente
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    funcionario.setId(generatedKeys.getInt(1));
+                }
+            }
         }
     }
 
@@ -42,7 +49,7 @@ public class FuncionarioDAO {
                         rs.getString("cpf"),
                         rs.getDate("data_nascimento").toLocalDate(),
                         rs.getString("telefone"),
-                        null, // O Endereco pode ser carregado de outra tabela
+                        null, // O Endereco pode ser carregado de outra tabela se necessário
                         rs.getString("codigo_funcionario"),
                         rs.getString("cargo"),
                         rs.getString("senha")
@@ -91,7 +98,7 @@ public class FuncionarioDAO {
                     rs.getString("cpf"),
                     rs.getDate("data_nascimento").toLocalDate(),
                     rs.getString("telefone"),
-                    null, // O Endereco pode ser carregado de outra tabela
+                    null, // O Endereco pode ser carregado de outra tabela se necessário
                     rs.getString("codigo_funcionario"),
                     rs.getString("cargo"),
                     rs.getString("senha")
@@ -102,16 +109,20 @@ public class FuncionarioDAO {
         return funcionarios;
     }
 
-    // Método para gerar um relatório de movimentações
+    // Método para gerar um relatório de movimentações de transações
     public void gerarRelatorioMovimentacao() throws SQLException {
-        String sql = "SELECT * FROM movimentacoes"; // Altere conforme a estrutura do banco
+        // Considerando que a tabela de transações existe no banco
+        String sql = "SELECT t.id_transacao, t.tipo_transacao, t.valor, t.data_hora, c.numero_conta " +
+                     "FROM transacao t " +
+                     "JOIN conta c ON t.conta_id = c.id_conta";
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                // Exemplo de impressão no console
-                System.out.println("Movimentação: " + rs.getInt("id") + ", Valor: " + rs.getDouble("valor"));
+                // Exemplo de impressão no console, pode ser modificado para salvar em um arquivo ou outro formato
+                System.out.println("Transação: " + rs.getInt("id_transacao") + ", Tipo: " + rs.getString("tipo_transacao") +
+                                   ", Valor: " + rs.getDouble("valor") + ", Data: " + rs.getTimestamp("data_hora") +
+                                   ", Conta: " + rs.getString("numero_conta"));
             }
         }
     }
 }
-

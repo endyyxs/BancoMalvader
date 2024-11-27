@@ -1,43 +1,47 @@
 package model;
 
 public abstract class Conta {
-	private int numero;
-	private String agencia;
-	private double saldo;
-	private Cliente cliente;
-	
-	public Conta(int numero, String agencia, double saldo, Cliente cliente) {
-		this.numero = numero;
-		this.agencia = agencia;
-		this.saldo = saldo;
-		this.cliente = cliente;
-	}
-	
-	
+    private int numero;
+    private String agencia;
+    private double saldo;
+    private Cliente cliente;
 
-	public int getNumero() {
-		return numero;
-	}
+    // Construtor da classe Conta
+    public Conta(int numero, String agencia, double saldo, Cliente cliente) {
+        this.numero = numero;
+        this.agencia = agencia;
+        this.saldo = saldo;
+        this.cliente = cliente;
+    }
 
-	public String getAgencia() {
-		return agencia;
-	}
+    // Getters e Setters
+    public int getNumero() {
+        return numero;
+    }
 
-	public double getSaldo() {
-		return saldo;
-	}
+    public String getAgencia() {
+        return agencia;
+    }
 
-	public void setSaldo(double saldo) {
-		this.saldo = saldo;
-	}
+    public double getSaldo() {
+        return saldo;
+    }
 
-	public Cliente getCliente() {
-		return cliente;
-	}
+    public void setSaldo(double saldo) {
+        this.saldo = saldo;
+    }
 
-	public abstract void depositar(double valor);
-	
-	public abstract boolean sacar(double valor);
-	
-	public abstract double consultarSaldo();
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    // Método para atualizar o saldo, para refletir operações como depósitos e saques
+    public void atualizarSaldo(double valor) {
+        this.saldo += valor;
+    }
+
+    // Métodos abstratos
+    public abstract void depositar(double valor);
+    public abstract boolean sacar(double valor);
+    public abstract double consultarSaldo();
 }
