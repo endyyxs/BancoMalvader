@@ -68,6 +68,15 @@ public class LoginFuncionarioView extends JFrame {
                 String usuarioInput = usuario.getText();
                 String senhaInput = new String(senha.getPassword());
 
+                // Verifica se os campos estão vazios
+                if (usuarioInput.isEmpty() || senhaInput.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, 
+                        "Por favor, preencha todos os campos!", 
+                        "Erro de Validação", 
+                        JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
                 // Verifica as credenciais
                 LoginController loginController = new LoginController();
                 if (loginController.validarLogin(usuarioInput, senhaInput)) {

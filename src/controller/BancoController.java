@@ -1,11 +1,9 @@
 package controller;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import dao.ContaCorrenteDAO;
 import dao.ContaDAO;
 import dao.FuncionarioDAO;
 import model.Cliente;
@@ -25,18 +23,18 @@ public class BancoController {
         this.contas = new ArrayList<>();
         this.funcionarios = new ArrayList<>();
         this.funcionarioDAO = new FuncionarioDAO(connection);
+        this.contaDAO = new ContaDAO(connection); // Inicializando o ContaDAO também
     }
 
     public void adicionarConta(Conta conta, Cliente cliente) {
         try {
             // Verificar se a conta já existe localmente
-        	if (contas.stream().anyMatch(c -> c.getNumero() == conta.getNumero())) {
-        	    System.err.println("Conta já existe localmente: " + conta.getNumero());
-        	    return;
-        	}
+            if (contas.stream().anyMatch(c -> c.getNumero() == conta.getNumero())) {
+                System.err.println("Conta já existe localmente: " + conta.getNumero());
+                return;
+            }
 
-
-            boolean sucesso;
+            boolean sucesso = false;
             // Chama o método adequado para o tipo de conta
             if (conta instanceof ContaCorrente) {
                 sucesso = contaDAO.cadastrarContaCorrente((ContaCorrente) conta, cliente);
@@ -60,6 +58,7 @@ public class BancoController {
             e.printStackTrace();
         }
     }
+
     // Remover uma conta da lista local
     public void removerConta(int numeroConta) {
         contas.removeIf(c -> c.getNumero() == numeroConta);
@@ -145,4 +144,3 @@ public class BancoController {
         }
     }
 }
-

@@ -33,7 +33,6 @@ public class EncerramentoContaView extends JFrame {
         confirmarButton.setBounds(150, 150, 100, 30);
         getContentPane().add(confirmarButton);
 
-        
         controller = new FuncionarioController();
 
         confirmarButton.addActionListener(new ActionListener() {
@@ -42,13 +41,30 @@ public class EncerramentoContaView extends JFrame {
                 // Recupera a senha digitada
                 String senha = new String(senhaField.getPassword());
 
+                // Verifica a senha
+                if (!senha.equals("admin123")) {
+                    JOptionPane.showMessageDialog(null, "Senha incorreta. Tente novamente.", "Erro", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 // Pede o número da conta para encerrar
                 String numeroConta = JOptionPane.showInputDialog("Digite o número da conta a ser encerrada:");
 
-                // Chama o método do Controller para processar o encerramento
-                controller.processarEncerramentoConta(senha, numeroConta);
+                // Verifica se o número da conta é válido
+                if (numeroConta == null || numeroConta.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Número da conta inválido. Tente novamente.", "Erro", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
-                // Se a senha for incorreta ou o número da conta for inválido, o Controller exibe uma mensagem de erro.
+                // Chama o método do Controller para processar o encerramento
+                boolean sucesso = controller.processarEncerramentoConta(senha, numeroConta);
+
+                // Exibe a mensagem dependendo do resultado do processo
+                if (sucesso) {
+                    JOptionPane.showMessageDialog(null, "Conta encerrada com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Falha no encerramento da conta. Verifique o número da conta.", "Erro", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
     }

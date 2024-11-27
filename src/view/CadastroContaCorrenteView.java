@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CadastroContaCorrenteView extends JFrame {
 
@@ -111,6 +113,12 @@ public class CadastroContaCorrenteView extends JFrame {
                     return;
                 }
 
+                // Verificação de formato de CPF (simples)
+                if (!isValidCPF(cpf)) {
+                    JOptionPane.showMessageDialog(null, "CPF inválido!");
+                    return;
+                }
+
                 // Verificação se limite é um número válido
                 try {
                     Double.parseDouble(limiteContaCorrente);
@@ -123,7 +131,6 @@ public class CadastroContaCorrenteView extends JFrame {
                 JOptionPane.showMessageDialog(null, "Cadastro realizado com sucesso!");
 
                 // Aqui você pode realizar outras ações, como salvar os dados no banco de dados, etc.
-                // BancoDeDados.salvarCadastro(agencia, numeroConta, nomeCliente, cpf, dataNascimento, telefone, endereco, cep, local, numeroCasa, bairro, cidade, estado, senha, limiteContaCorrente, dataVencimento);
             }
         });
         getContentPane().add(enviarButton);
@@ -150,6 +157,14 @@ public class CadastroContaCorrenteView extends JFrame {
 
         field.setBounds(x + 150, y, width, 20);
         getContentPane().add(field);
+    }
+
+    // Método de validação de CPF
+    private boolean isValidCPF(String cpf) {
+        String regex = "^[0-9]{11}$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(cpf);
+        return matcher.matches();
     }
 
     public static void main(String[] args) {

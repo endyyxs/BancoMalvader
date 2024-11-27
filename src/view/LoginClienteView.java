@@ -2,12 +2,13 @@ package view;
 
 import java.awt.Color;
 import java.awt.Font;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.JOptionPane;
+import controller.LoginController; // Certifique-se de ter esse controller importado
 
 public class LoginClienteView extends JFrame {
     private JTextField usuario;
@@ -53,8 +54,31 @@ public class LoginClienteView extends JFrame {
         btnLogin.setBounds(76, 300, 307, 30);
         getContentPane().add(btnLogin);
 
-       
-    
+        // Ação de Login
+        btnLogin.addActionListener(e -> {
+            // Obtendo os dados inseridos
+            String usuarioInput = usuario.getText();
+            String senhaInput = new String(senha.getPassword());
+
+            // Validação simples
+            if (usuarioInput.isEmpty() || senhaInput.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Validar o login usando o LoginController
+            LoginController loginController = new LoginController();
+            if (loginController.validarLogin(usuarioInput, senhaInput)) {
+                // Login bem-sucedido, abrir a próxima tela
+                // Substitua com a tela que deseja abrir após o login, por exemplo, uma tela de cliente
+                JOptionPane.showMessageDialog(this, "Login realizado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                // Fechar a janela de login
+                dispose(); 
+            } else {
+                // Exibe mensagem de erro
+                JOptionPane.showMessageDialog(this, "Usuário ou senha inválidos!", "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        });
     }
 
     public static void main(String[] args) {
