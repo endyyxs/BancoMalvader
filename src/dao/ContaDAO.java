@@ -11,21 +11,39 @@ import model.Cliente;
 import model.Conta;
 import model.ContaCorrente;
 import model.ContaPoupanca;
+import model.Usuario;
 import util.DBUtil;
 
 public class ContaDAO {
-
-    private Connection conexao;
+    private Connection connection;
 
     public ContaDAO() {
-        this.conexao = DBUtil.getConnection();
+        this.connection = DBUtil.getConnection();
     }
-
-    // Consultar saldo de um cliente
+    
+    public boolean deletarConta(Integer numero) {
+    	String sql = "DELETE FROM conta WHERE numero_conta = ?";
+    	
+    	try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+    		stmt.setInt(1, numero);  
+    		
+    		stmt.executeUpdate();
+            connection.commit(); 
+            
+    		return true;
+    	} catch (SQLException e) {
+            System.err.println("Erro ao deletar conta: " + e.getMessage());
+        } catch (Exception e) {
+        	System.err.println("Erro: " + e.getMessage());
+        }
+    	
+		return false;
+    }
+    
     public double consultarSaldo(Cliente cliente) {
         String sql = "SELECT saldo FROM conta WHERE cliente_id = ?";
-        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
-            stmt.setInt(1, cliente.getId());  // Usando o ID do cliente
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, cliente.getId());  
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return rs.getDouble("saldo");
@@ -37,12 +55,12 @@ public class ContaDAO {
         return 0;
     }
 
-    // Depositar valor na conta do cliente
+    
     public boolean depositar(Cliente cliente, double valor) {
         String sql = "UPDATE conta SET saldo = saldo + ? WHERE cliente_id = ?";
-        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setDouble(1, valor);
-            stmt.setInt(2, cliente.getId());  // Usando o ID do cliente
+            stmt.setInt(2, cliente.getId());  
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
                 registrarTransacao(cliente, valor, "deposito");
@@ -54,13 +72,13 @@ public class ContaDAO {
         }
     }
 
-    // Sacar valor da conta do cliente
+    
     public boolean sacar(Cliente cliente, double valor) {
         String sql = "UPDATE conta SET saldo = saldo - ? WHERE cliente_id = ? AND saldo >= ?";
-        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setDouble(1, valor);
-            stmt.setInt(2, cliente.getId());  // Usando o ID do cliente
-            stmt.setDouble(3, valor);  // Verificando se o saldo é suficiente
+            stmt.setInt(2, cliente.getId());  
+            stmt.setDouble(3, valor);  
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
                 registrarTransacao(cliente, valor, "saque");
@@ -72,15 +90,15 @@ public class ContaDAO {
         }
     }
 
-    // Consultar extrato de transações de um cliente
+    
     public List<String> consultarExtrato(Cliente cliente) {
         String sql = "SELECT t.data_hora, t.tipo_transacao, t.valor " +
                      "FROM transacao t " +
                      "JOIN conta c ON t.conta_id = c.id_conta " +
                      "WHERE c.cliente_id = ? ORDER BY t.data_hora DESC";
         List<String> extrato = new ArrayList<>();
-        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
-            stmt.setInt(1, cliente.getId());  // Usando o ID do cliente
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, cliente.getId());  
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 String linha = String.format("Data: %s, Tipo: %s, Valor: R$ %.2f",
@@ -96,14 +114,14 @@ public class ContaDAO {
         return extrato;
     }
 
-    // Registrar transação no banco de dados (depósito ou saque)
+    
     private void registrarTransacao(Cliente cliente, double valor, String tipoTransacao) {
         String sql = "INSERT INTO transacao (tipo_transacao, valor, data_hora, conta_id) " +
                      "SELECT ?, ?, NOW(), id_conta FROM conta WHERE cliente_id = ?";
-        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, tipoTransacao);
             stmt.setDouble(2, valor);
-            stmt.setInt(3, cliente.getId());  // Usando o ID do cliente
+            stmt.setInt(3, cliente.getId());  
             stmt.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Erro ao registrar transação: " + e.getMessage());
@@ -111,22 +129,23 @@ public class ContaDAO {
         }
     }
 
-    // Cadastrar conta genérica (Corrente ou Poupança)
+    
     public boolean cadastrarConta(Conta conta, Cliente cliente) {
         try {
-            conexao.setAutoCommit(false);  // Inicia a transação
-
-            // Inserir cliente e dados do usuário
+            connection.setAutoCommit(false);
+           
+            if(!inserirUsuario((Cliente) cliente)) {
+            	return false;
+            }
+            
             if (!inserirCliente(cliente)) {
                 return false;
             }
 
-            // Inserir conta
             if (!inserirConta(conta, cliente)) {
                 return false;
             }
-
-            // Inserir dados específicos da conta (Conta Corrente ou Conta Poupança)
+            
             if (conta instanceof ContaCorrente) {
                 if (!inserirContaCorrente((ContaCorrente) conta)) {
                     return false;
@@ -137,76 +156,124 @@ public class ContaDAO {
                 }
             }
 
-            conexao.commit();  // Commit da transação
+            connection.commit();  
             return true;
         } catch (SQLException e) {
             try {
-                conexao.rollback();  // Rollback em caso de erro
+                connection.rollback();  
             } catch (SQLException rollbackEx) {
                 System.err.println("Erro ao reverter transação: " + rollbackEx.getMessage());
             }
+            
             System.err.println("Erro ao cadastrar conta: " + e.getMessage());
             return false;
         } finally {
             try {
-                conexao.setAutoCommit(true);  // Restaura o comportamento padrão de auto-commit
+                connection.setAutoCommit(true);  
             } catch (SQLException autoCommitEx) {
                 System.err.println("Erro ao restaurar auto-commit: " + autoCommitEx.getMessage());
             }
         }
     }
-
-    // Inserir dados do cliente no banco de dados
-    private boolean inserirCliente(Cliente cliente) throws SQLException {
-        String sql = "INSERT INTO cliente (usuario_id) VALUES (?)";
-        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
-            stmt.setInt(1, cliente.getId());
-            return stmt.executeUpdate() > 0;
+    
+    private boolean inserirUsuario(Usuario usuario) {
+    	String sql = "INSERT INTO usuario (nome, cpf, data_nascimento, telefone, tipo_usuario, senha) VALUES (?, ?, ?, ?, ?, ?)";
+    	
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, usuario.getNome());
+            stmt.setString(2, usuario.getCpf());
+            stmt.setDate(3, java.sql.Date.valueOf(usuario.getDataNascimento()));
+            stmt.setString(4, usuario.getTelefone());
+            stmt.setString(5, usuario instanceof Cliente ? "cliente" : "funcionario");
+            stmt.setString(6, usuario.getSenha());
+            
+            stmt.executeUpdate();
+            connection.commit(); 
+            
+            return true;
+        } catch(SQLException e) {
+        	System.err.println("Erro ao cadastrar usuário: " + e.getMessage());
+        	return false;
+        }
+    }
+    
+    private boolean inserirCliente(Cliente cliente) {
+        String sql = "INSERT INTO cliente (id_usuario) VALUES (LAST_INSERT_ID())";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.executeUpdate();
+            connection.commit(); 
+            
+            return true;
+        } catch(SQLException e) {
+        	System.err.println("Erro ao cadastrar cliente: " + e.getMessage());
+        	return false;
         }
     }
 
-    // Inserir dados da conta no banco de dados
-    private boolean inserirConta(Conta conta, Cliente cliente) throws SQLException {
-        String sql = "INSERT INTO conta (numero_conta, agencia, saldo, tipo_conta, cliente_id) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
-            stmt.setDouble(1, conta.getNumero());
+    
+    private boolean inserirConta(Conta conta, Cliente cliente) {
+        String sql = "INSERT INTO conta (numero_conta, agencia, saldo, tipo_conta, id_cliente) VALUES (?, ?, ?, ?, LAST_INSERT_ID())";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, conta.getNumero());
             stmt.setString(2, conta.getAgencia());
             stmt.setDouble(3, conta.getSaldo());
             stmt.setString(4, conta instanceof ContaCorrente ? "corrente" : "poupanca");
-            stmt.setInt(5, cliente.getId());
-            return stmt.executeUpdate() > 0;
+            
+            stmt.executeUpdate();
+            connection.commit(); 
+            
+            return true;
+        } catch(SQLException e) {
+        	System.err.println("Erro ao cadastrar conta: " + e.getMessage());
+        	return false;
         }
     }
 
-    // Inserir dados específicos da Conta Corrente
-    private boolean inserirContaCorrente(ContaCorrente contaCorrente) throws SQLException {
-        String sql = "INSERT INTO conta_corrente (limite, data_vencimento, conta_id) VALUES (?, ?, LAST_INSERT_ID())";
-        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+    
+    private boolean inserirContaCorrente(ContaCorrente contaCorrente) {
+        String sql = "INSERT INTO conta_corrente (limite, data_vencimento, id_conta) VALUES (?, ?, LAST_INSERT_ID())";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setDouble(1, contaCorrente.getLimite());
             stmt.setDate(2, java.sql.Date.valueOf(contaCorrente.getDataVencimento()));
-            return stmt.executeUpdate() > 0;
+            
+            stmt.executeUpdate();
+            connection.commit(); 
+            
+            return true;
+        } catch(SQLException e) {
+        	System.err.println("Erro ao cadastrar conta corrente: " + e.getMessage());
+        	return false;
         }
     }
-
-    // Inserir dados específicos da Conta Poupança
-    private boolean inserirContaPoupanca(ContaPoupanca contaPoupanca) throws SQLException {
-        String sql = "INSERT INTO conta_poupanca (taxa_rendimento, conta_id) VALUES (?, LAST_INSERT_ID())";
-        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+    
+    private boolean inserirContaPoupanca(ContaPoupanca contaPoupanca) {
+        String sql = "INSERT INTO conta_poupanca (taxa_rendimento, id_conta) VALUES (?, LAST_INSERT_ID())";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setDouble(1, contaPoupanca.getTaxaRendimento());
-            return stmt.executeUpdate() > 0;
+            
+            stmt.executeUpdate();
+            connection.commit(); 
+            return true;
+        } catch(SQLException e) {
+        	System.err.println("Erro ao cadastrar conta poupança: " + e.getMessage());
+        	return false;
         }
     }      
-        // Method to save any type of account
-        public void salvar(Conta conta) {
-            // Implement logic to save a generic account to the database
-            String sql = "INSERT INTO contas (numero, saldo) VALUES (?, ?)";
-            try (Connection conn = DBUtil.getConnection(); 
-                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+        
+        public void salvar(Conta conta) throws Exception {
+            String sql = "INSERT INTO conta (numero_conta, saldo, agencia, id_cliente) VALUES (?, ?, ?, ?)";
+            try (Connection conn = DBUtil.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setInt(1, conta.getNumero());
                 stmt.setDouble(2, conta.getSaldo());
+                stmt.setString(3, conta.getAgencia());
                 stmt.executeUpdate();
             } catch (SQLException e) {
                 System.err.println("Erro ao salvar a conta: " + e.getMessage());
+                throw new Exception("Erro ao salvar a conta: " + e.getMessage());
             }
         }
     }

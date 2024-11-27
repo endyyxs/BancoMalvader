@@ -39,19 +39,13 @@ public class EncerramentoContaView extends JFrame {
         confirmarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Recupera a senha digitada
                 String senha = new String(senhaField.getPassword());
-
-                // Pede o número da conta para encerrar
-                String numeroConta = JOptionPane.showInputDialog("Digite o número da conta a ser encerrada:");
-
-                // Chama o método do Controller para processar o encerramento
-                controller.processarEncerramentoConta(senha, numeroConta);
-
-                // Se a senha for incorreta ou o número da conta for inválido, o Controller exibe uma mensagem de erro.
+                
+            
+                controller.processarEncerramentoConta(senha);
             }
         });
-    }
+    }	
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {

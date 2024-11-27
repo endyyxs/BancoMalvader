@@ -7,13 +7,9 @@ import dao.ContaDAO;
 import model.Cliente;
 
 public abstract class ContaController {
-	
 	protected ContaDAO dao;
 
     public ContaController(ContaDAO dao) {
-        if (dao == null) {
-            throw new IllegalArgumentException("O DAO não pode ser nulo.");
-        }
         this.dao = dao;
     }
 

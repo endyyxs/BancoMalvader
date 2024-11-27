@@ -8,16 +8,15 @@ import java.sql.*;
 import javax.swing.JPasswordField;
 
 public class ClienteDAO {
-
-    private Connection conexao;
+    private Connection connection;
 
     public ClienteDAO() {
-        this.conexao = DBUtil.getConnection();
+        this.connection = DBUtil.getConnection();
     }
 
     public void salvar(Cliente cliente) throws SQLException {
         String sql = "INSERT INTO usuario (nome, cpf) VALUES (?, ?)";
-        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, cliente.getNome());
             stmt.setString(2, cliente.getCpf());
             stmt.executeUpdate();
@@ -26,7 +25,7 @@ public class ClienteDAO {
     
     private Endereco buscarEndereco(int idCliente) throws SQLException {
         String sql = "SELECT * FROM endereco WHERE id_cliente = ?";
-        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, idCliente);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -41,7 +40,7 @@ public class ClienteDAO {
 
     public Cliente buscarPorId(int id) throws SQLException {
         String sql = "SELECT * FROM usuario WHERE id = ?";
-        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -52,20 +51,19 @@ public class ClienteDAO {
                 	    rs.getString("cpf"),
                 	    rs.getDate("data_nascimento").toLocalDate(),
                 	    rs.getString("telefone"),
-                	    endereco
+                	    endereco,
+                	    rs.getString("senha")
                 	);
-
                 }
-                return null; // Cliente não encontrado
+                
+                return null;
             }
         }
     }
 
-
-
     public void atualizar(Cliente cliente) throws SQLException {
         String sql = "UPDATE usuario SET nome = ?, cpf = ? WHERE id = ?";
-        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, cliente.getNome());
             stmt.setString(2, cliente.getCpf());
             stmt.setInt(3, cliente.getId());
@@ -75,7 +73,7 @@ public class ClienteDAO {
 
     public void excluir(int id) throws SQLException {
         String sql = "DELETE FROM usuario WHERE id = ?";
-        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
         }

@@ -3,13 +3,11 @@ package model;
 public class ContaPoupanca extends Conta {
     private double taxaRendimento;
 
-    // Construtor da conta poupança
-    public ContaPoupanca(int numero, String agencia, double saldo, Cliente cliente, double taxaRendimento) {
-        super(numero, agencia, saldo, cliente);
+    public ContaPoupanca(int numero, String agencia, double saldo, double taxaRendimento) {
+        super(numero, agencia, saldo);
         this.taxaRendimento = taxaRendimento;
     }
 
-    // Getter e Setter para taxa de rendimento
     public double getTaxaRendimento() {
         return taxaRendimento;
     }
@@ -19,15 +17,13 @@ public class ContaPoupanca extends Conta {
     }
     
     public int getNumeroConta() {
-        return getNumero(); // Chama o getNumero() da classe pai
+        return getNumero(); 
     }
 
-    // Método para calcular o rendimento da conta poupança
     public double calcularRendimento() {
         return getSaldo() * taxaRendimento;
     }
 
-    // Método para depositar valores na conta
     @Override
     public void depositar(double valor) {
         if (valor > 0) {
@@ -37,7 +33,6 @@ public class ContaPoupanca extends Conta {
         }
     }
 
-    // Método para sacar valores da conta (considerando saldo suficiente)
     @Override
     public boolean sacar(double valor) {
         if (valor > 0 && valor <= getSaldo()) {
@@ -49,9 +44,9 @@ public class ContaPoupanca extends Conta {
         }
     }
 
-    // Método para consultar o saldo da conta (herdado da classe Conta)
+    
     @Override
     public double consultarSaldo() {
-        return getSaldo(); // A classe pai já gerencia o saldo
+        return getSaldo(); 
     }
 }
