@@ -1,6 +1,8 @@
 package controller;
 
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+
 import dao.ClienteDAO;
 import model.Cliente;
 

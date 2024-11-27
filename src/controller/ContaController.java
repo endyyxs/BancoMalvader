@@ -1,13 +1,14 @@
 package controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import dao.ContaDAO;
 import model.Cliente;
 
 public abstract class ContaController {
 	
-	private ContaDAO dao;
+	protected ContaDAO dao;
 
     public ContaController(ContaDAO dao) {
         if (dao == null) {
@@ -20,15 +21,22 @@ public abstract class ContaController {
         return tratarOperacao(() -> dao.consultarSaldo(cliente));
     }
 
-    public void depositar(Cliente cliente, double valor) {
+    public void depositar(Optional<Cliente> clienteOpt, double valor) {
+        clienteOpt.orElseThrow(() -> new IllegalArgumentException("Cliente não pode ser nulo."));
+        
         if (valor <= 0) {
             throw new IllegalArgumentException("O valor para depósito deve ser positivo.");
         }
-        tratarOperacao(() -> {
-            if (dao.depositar(cliente, valor)) {
+        
+        try {
+            if (dao.depositar(clienteOpt.get(), valor)) {
                 System.out.println("Depósito realizado com sucesso.");
+            } else {
+                throw new RuntimeException("Falha ao realizar depósito.");
             }
-        });
+        } catch (Exception e) {
+            System.err.println("Erro ao processar o depósito: " + e.getMessage());
+        }
     }
 
     public boolean sacar(Cliente cliente, double valor) {

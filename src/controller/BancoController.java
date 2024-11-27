@@ -23,7 +23,7 @@ public class BancoController {
         this.contas = new ArrayList<>();
         this.funcionarios = new ArrayList<>();
         this.funcionarioDAO = new FuncionarioDAO(connection);
-        this.contaDAO = new ContaDAO(connection); // Inicializando o ContaDAO também
+        this.contaDAO = new ContaDAO(); // Inicializando o ContaDAO também
     }
 
     public void adicionarConta(Conta conta, Cliente cliente) {
@@ -37,9 +37,9 @@ public class BancoController {
             boolean sucesso = false;
             // Chama o método adequado para o tipo de conta
             if (conta instanceof ContaCorrente) {
-                sucesso = contaDAO.cadastrarContaCorrente((ContaCorrente) conta, cliente);
+                sucesso = contaDAO.cadastrarConta((ContaCorrente) conta, cliente);
             } else if (conta instanceof ContaPoupanca) {
-                sucesso = contaDAO.cadastrarContaPoupanca((ContaPoupanca) conta, cliente);
+                sucesso = contaDAO.cadastrarConta((ContaPoupanca) conta, cliente);
             } else {
                 System.err.println("Tipo de conta desconhecido.");
                 return;

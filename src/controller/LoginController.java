@@ -1,34 +1,33 @@
 package controller;
 
-import dao.UsuarioDAO;  // Exemplo de DAO para buscar usuário no banco de dados
-import model.Usuario;
+import dao.ClienteDAO;
+import model.Cliente;
 
 public class LoginController {
 
-    private UsuarioDAO usuarioDAO;  // DAO para acessar usuários no banco de dados
+    private ClienteDAO clienteDAO;
 
-    public LoginController(UsuarioDAO usuarioDAO) {
-        this.usuarioDAO = usuarioDAO;
+    public LoginController(ClienteDAO clienteDAO) {
+        this.clienteDAO = clienteDAO;
     }
 
-    // Lógica para validar o login
-    public boolean validarLogin(String usuario, String senha) {
+    // Lógica para validar o login usando o id do cliente e senha
+    public boolean validarLogin(int idCliente, String senha) {
         try {
-            // Buscar o usuário no banco de dados
-            Usuario usuarioEncontrado = usuarioDAO.buscarPorNome(usuario);
+            // Busca o cliente pelo id
+            Cliente cliente = clienteDAO.buscarPorId(idCliente);
 
-            // Verifica se o usuário foi encontrado
-            if (usuarioEncontrado != null) {
-                // Aqui você pode usar uma função para comparar a senha de forma segura (com hash)
-                if (usuarioEncontrado.getSenha().equals(senha)) {  // Apenas para exemplo, use hash na prática
-                    return true; // Login bem-sucedido
+            // Verifica se o cliente foi encontrado
+            if (cliente != null) {
+                // Compara a senha fornecida com a armazenada
+                if (cliente.getSenha().equals(senha)) {  // Comparação de senha (hash recomendado)
+                    return true;  // Login válido
                 }
             }
         } catch (Exception e) {
             System.err.println("Erro ao validar login: " + e.getMessage());
         }
 
-        return false; // Login falhou
+        return false;  // Se o cliente não for encontrado ou a senha não corresponder
     }
 }
-

@@ -19,8 +19,13 @@ public class ContaPoupancaController extends ContaController {
             // Buscar a conta poupança do banco de dados
             ContaPoupanca contaPoupanca = (ContaPoupanca) super.dao.buscarPorNumero(numeroConta);
             if (contaPoupanca != null) {
-                // Calcular o rendimento com base no saldo e na taxa de rendimento
-                return contaPoupanca.getSaldo() * contaPoupanca.getTaxaRendimento();
+                // Verificar se a taxa de rendimento e saldo são válidos
+                if (contaPoupanca.getTaxaRendimento() > 0 && contaPoupanca.getSaldo() > 0) {
+                    return contaPoupanca.getSaldo() * contaPoupanca.getTaxaRendimento();
+                } else {
+                    System.out.println("Taxa de rendimento ou saldo inválidos.");
+                    return 0;
+                }
             } else {
                 System.out.println("Conta poupança não encontrada.");
                 return 0;
@@ -34,12 +39,20 @@ public class ContaPoupancaController extends ContaController {
     // Método para salvar uma nova conta poupança no banco de dados
     public void salvarContaPoupanca(ContaPoupanca contaPoupanca) {
         try {
+            // Validação da conta antes de salvar
+            if (contaPoupanca.getSaldo() <= 0 || contaPoupanca.getNumero() <= 0) {
+                JOptionPane.showMessageDialog(null, "A conta precisa ter um número válido e saldo positivo!");
+                return;
+            }
+
             super.dao.salvar(contaPoupanca);  // Chamando o método do DAO para salvar a conta no banco
             JOptionPane.showMessageDialog(null, "Conta Poupança cadastrada com sucesso!");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Erro ao salvar a conta: " + e.getMessage());
         }
     }
-
-    // Não é necessário sobrescrever esses métodos, pois já são tratados pela classe pai
 }
+
+
+
+

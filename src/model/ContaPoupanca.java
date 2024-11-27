@@ -17,6 +17,10 @@ public class ContaPoupanca extends Conta {
     public void setTaxaRendimento(double taxaRendimento) {
         this.taxaRendimento = taxaRendimento;
     }
+    
+    public int getNumeroConta() {
+        return getNumero(); // Chama o getNumero() da classe pai
+    }
 
     // Método para calcular o rendimento da conta poupança
     public double calcularRendimento() {

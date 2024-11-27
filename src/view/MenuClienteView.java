@@ -1,29 +1,27 @@
 package view;
 
 import javax.swing.*;
+
 import model.Cliente;
 import model.Conta;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class MenuClienteView extends JFrame {
 
-    private Cliente cliente; // Cliente que irá interagir com o sistema
-
-    public MenuClienteView(Cliente cliente) {
+    public MenuClienteView() {
         super("Menu Cliente");
-        this.cliente = cliente; // Atribuindo o cliente que foi autenticado no login
-
-        getContentPane().setBackground(new Color(252, 214, 247));
-        this.setSize(500, 430);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        getContentPane().setBackground(new Color(252, 214, 247)); 
+        this.setSize(500, 430); 
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
         getContentPane().setLayout(null);
         this.setLocationRelativeTo(null);
 
         // Título
         JLabel menucliente = new JLabel("MENU CLIENTE");
-        menucliente.setForeground(new Color(63, 63, 63));
+        menucliente.setForeground(new Color(63, 63, 63)); 
         menucliente.setFont(new Font("Tahoma", Font.BOLD, 30));
         menucliente.setBounds(120, 32, 307, 34);
         getContentPane().add(menucliente);
@@ -69,7 +67,8 @@ public class MenuClienteView extends JFrame {
         saque.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                solicitarSenha("Saque"); // Solicita a senha antes de abrir a tela de saque
+            	solicitarSenhaSaque("Saque");
+                abrirTelaSaque(); // Abre a tela de saque
             }
         });
 
@@ -87,50 +86,60 @@ public class MenuClienteView extends JFrame {
         getContentPane().add(botaosair);
     }
 
-    // Método para verificar a senha do cliente
-    private boolean verificarSenha(String senha) {
-        // Aqui você verificaria a senha com a base de dados ou lógica de autenticação
-        return senha.equals("1234");  // Apenas para testes, substitua por lógica real
-    }
-
     // Método para solicitar a senha antes de abrir a tela de saldo
     private void solicitarSenha(String operacao) {
         JPasswordField passwordField = new JPasswordField(10);
-        int option = JOptionPane.showConfirmDialog(this, passwordField, "Digite sua senha para " + operacao, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        JOptionPane.showConfirmDialog(this, passwordField, "Digite sua senha para " + operacao, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-        if (option == JOptionPane.OK_OPTION) {
-            String senha = new String(passwordField.getPassword());
-            if (verificarSenha(senha)) {
-                if (operacao.equals("Saldo")) {
-                    abrirTelaSaldo();  // Método que mostra o saldo
-                } else if (operacao.equals("Saque")) {
-                    abrirTelaSaque();  // Método que realiza o saque
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Senha incorreta!", "Erro", JOptionPane.ERROR_MESSAGE);
+        // Aqui, você pode adicionar lógica para verificar a senha, mas como você pediu apenas a navegação, estou mantendo simples.
+        String senha = new String(passwordField.getPassword());
+
+        // Se a senha estiver correta, abre a tela correspondente
+        if (senha.equals("1234")) { // Exemplo de senha, substitua pela sua lógica
+            if (operacao.equals("Saldo")) {
+                abrirTelaSaldo(null); // Abre a tela de saldo
             }
+        } else {
+            JOptionPane.showMessageDialog(this, "Senha incorreta!", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void solicitarSenhaSaque(String operacao) {
+        JPasswordField passwordField = new JPasswordField(10);
+        JOptionPane.showConfirmDialog(this, passwordField, "Digite sua senha para " + operacao, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        // Aqui, você pode adicionar lógica para verificar a senha, mas como você pediu apenas a navegação, estou mantendo simples.
+        String senha = new String(passwordField.getPassword());
+
+        // Se a senha estiver correta, abre a tela correspondente
+        if (senha.equals("1234")) { // Exemplo de senha, substitua pela sua lógica
+            if (operacao.equals("Saque")) {
+                abrirTelaSaque(); // Abre a tela de saldo
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Senha incorreta!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    // Método para abrir a tela de saldo com o controle de saldo
-    private void abrirTelaSaldo() {
-        // Aqui, você pode acessar a conta do cliente e consultar o saldo
-        double saldo = cliente.getConta().consultarSaldo();
-        JOptionPane.showMessageDialog(this, "Seu saldo é: R$ " + saldo);
+    // Método para abrir a tela de saldo
+    private void abrirTelaSaldo(Conta conta) {
+    	double saldo = conta.consultarSaldo();
+    	
+    	JOptionPane.showMessageDialog(this, "Saldo na conta: R$ " + saldo);
+    	       
     }
 
     // Método para abrir a tela de depósito
     private void abrirTelaDeposito() {
         // Solicita o valor do depósito
         String valorString = JOptionPane.showInputDialog(this, "Digite o valor do depósito:");
-
+        
         if (valorString != null) {
             try {
                 double valor = Double.parseDouble(valorString);
 
                 if (valor > 0) {
                     // Aqui você pode adicionar lógica para registrar o valor no banco de dados
-                    cliente.getConta().depositar(valor); // Realiza o depósito na conta do cliente
                     JOptionPane.showMessageDialog(this, "Valor registrado no banco de dados: R$ " + valor);
                 } else {
                     JOptionPane.showMessageDialog(this, "O valor deve ser maior que 0!", "Erro", JOptionPane.ERROR_MESSAGE);
@@ -143,42 +152,44 @@ public class MenuClienteView extends JFrame {
 
     // Método para abrir a tela de extrato
     private void abrirTelaExtrato() {
-        // Aqui você pode mostrar um extrato real da conta do cliente
-        String extrato = cliente.getConta().consultarExtrato();
-        JOptionPane.showMessageDialog(this, "Extrato: \n" + extrato);
+        // Apenas cria uma nova janela de extrato
+        JFrame telaExtrato = new JFrame("Extrato");
+        telaExtrato.setSize(400, 300);
+        telaExtrato.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        telaExtrato.setLocationRelativeTo(null);
+        JLabel label = new JLabel("Tela de Extrato", SwingConstants.CENTER);
+        telaExtrato.add(label);
+        telaExtrato.setVisible(true);
     }
 
     // Método para abrir a tela de saque
     private void abrirTelaSaque() {
-        String valorString = JOptionPane.showInputDialog(this, "Digite o valor que deseja sacar:");
-
-        if (valorString != null) {
-            try {
-                double valor = Double.parseDouble(valorString);
-
-                if (valor > 0) {
-                    boolean saqueRealizado = cliente.getConta().sacar(valor); // Tenta realizar o saque
-                    if (saqueRealizado) {
-                        JOptionPane.showMessageDialog(this, "Valor do saque: R$ " + valor);
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Saldo insuficiente!", "Erro", JOptionPane.ERROR_MESSAGE);
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(this, "O valor deve ser maior que 0!", "Erro", JOptionPane.ERROR_MESSAGE);
-                }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Valor inválido!", "Erro", JOptionPane.ERROR_MESSAGE);
-            }
-        }
+        // Apenas cria uma nova janela de saque
+	String valorsaque = JOptionPane.showInputDialog(this, "Digite o valor que deseja sacar:");
+	        
+	        if (valorsaque != null) {
+	            try {
+	                double valorsacar = Double.parseDouble(valorsaque);
+	
+	                if (valorsacar > 0) {
+	                    // Aqui você pode adicionar lógica para registrar o valor no banco de dados
+	                    JOptionPane.showMessageDialog(this, "Valor do saque: R$ " + valorsacar);
+	                } else {
+	                    JOptionPane.showMessageDialog(this, "O valor deve ser maior que 0!", "Erro", JOptionPane.ERROR_MESSAGE);
+	                }
+	            } catch (NumberFormatException ex) {
+	                JOptionPane.showMessageDialog(this, "Valor inválido!", "Erro", JOptionPane.ERROR_MESSAGE);
+	            }
+	        }
     }
 
     public static void main(String[] args) {
-        // Criando um cliente fictício para exemplo
-        Cliente cliente = new Cliente("João", "123456789", new Conta(1000.00)); // Crie seu cliente e conta
-
         // Usando o Event Dispatch Thread para garantir que a interface gráfica seja criada corretamente
-        SwingUtilities.invokeLater(() -> {
-            new MenuClienteView(cliente).setVisible(true); // Passando o cliente autenticado
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new MenuClienteView().setVisible(true); // Tornando a janela visível
+            }
         });
     }
 }

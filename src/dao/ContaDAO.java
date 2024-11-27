@@ -195,5 +195,20 @@ public class ContaDAO {
             stmt.setDouble(1, contaPoupanca.getTaxaRendimento());
             return stmt.executeUpdate() > 0;
         }
+    }      
+        // Method to save any type of account
+        public void salvar(Conta conta) {
+            // Implement logic to save a generic account to the database
+            String sql = "INSERT INTO contas (numero, saldo) VALUES (?, ?)";
+            try (Connection conn = DBUtil.getConnection(); 
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, conta.getNumero());
+                stmt.setDouble(2, conta.getSaldo());
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                System.err.println("Erro ao salvar a conta: " + e.getMessage());
+            }
+        }
     }
-}
+
+

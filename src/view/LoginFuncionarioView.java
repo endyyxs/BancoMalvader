@@ -12,7 +12,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.JOptionPane; // Importando o JOptionPane para mostrar mensagens
 
-import controller.LoginController; // Certifique-se de que seu controller esteja importado
+import controller.LoginController;
+import dao.ClienteDAO; // Certifique-se de que seu controller esteja importado
 
 public class LoginFuncionarioView extends JFrame {
     private JTextField usuario;
@@ -68,17 +69,13 @@ public class LoginFuncionarioView extends JFrame {
                 String usuarioInput = usuario.getText();
                 String senhaInput = new String(senha.getPassword());
 
-                // Verifica se os campos estão vazios
-                if (usuarioInput.isEmpty() || senhaInput.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, 
-                        "Por favor, preencha todos os campos!", 
-                        "Erro de Validação", 
-                        JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
+                // Cria uma instância do ClienteDAO
+                ClienteDAO clienteDAO = new ClienteDAO();
+                
+                // Cria uma instância do LoginController, passando o clienteDAO
+                LoginController loginController = new LoginController(clienteDAO);
 
                 // Verifica as credenciais
-                LoginController loginController = new LoginController();
                 if (loginController.validarLogin(usuarioInput, senhaInput)) {
                     // Se as credenciais forem válidas, abre o menu do funcionário
                     MenuFuncionarioView menuFuncionarioView = new MenuFuncionarioView();
@@ -92,7 +89,7 @@ public class LoginFuncionarioView extends JFrame {
                         JOptionPane.ERROR_MESSAGE); // Exibe uma mensagem de erro
                 }
             }
-        });
+
     }
 
     public static void main(String[] args) {
