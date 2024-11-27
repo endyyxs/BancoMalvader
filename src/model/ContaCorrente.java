@@ -16,6 +16,19 @@ public class ContaCorrente extends Conta {
 		return limite;
 		
 	}
+	
+
+	public double getLimite() {
+		return limite;
+	}
+
+	public void setLimite(double limite) {
+		this.limite = limite;
+	}
+
+	public void setDataVencimento(LocalDate dataVencimento) {
+		this.dataVencimento = dataVencimento;
+	}
 
 	@Override
 	public void depositar(double valor) {
@@ -33,5 +46,20 @@ public class ContaCorrente extends Conta {
 	public double consultarSaldo() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	public String getSenha() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public double getLimiteContaCorrente() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public String getDataVencimento() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

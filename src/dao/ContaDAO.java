@@ -8,9 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.Cliente;
+import model.Conta;
+import model.ContaCorrente;
+import model.ContaPoupanca;
 import util.DBUtil;
 
-public abstract class ContaDAO {
+public class ContaDAO {
 
     private Connection conexao;
 
@@ -42,7 +45,6 @@ public abstract class ContaDAO {
             stmt.setInt(2, cliente.getId());  // Usando o ID do cliente
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
-                // After deposit, you can insert the transaction into transacao table if needed
                 registrarTransacao(cliente, valor, "deposito");
             }
             return rowsAffected > 0;
@@ -61,7 +63,6 @@ public abstract class ContaDAO {
             stmt.setDouble(3, valor);  // Verificando se o saldo é suficiente
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
-                // After withdrawal, you can insert the transaction into transacao table if needed
                 registrarTransacao(cliente, valor, "saque");
             }
             return rowsAffected > 0;
@@ -107,6 +108,92 @@ public abstract class ContaDAO {
         } catch (SQLException e) {
             System.err.println("Erro ao registrar transação: " + e.getMessage());
             throw new RuntimeException("Erro ao registrar transação", e);
+        }
+    }
+
+    // Cadastrar conta genérica (Corrente ou Poupança)
+    public boolean cadastrarConta(Conta conta, Cliente cliente) {
+        try {
+            conexao.setAutoCommit(false);  // Inicia a transação
+
+            // Inserir cliente e dados do usuário
+            if (!inserirCliente(cliente)) {
+                return false;
+            }
+
+            // Inserir conta
+            if (!inserirConta(conta, cliente)) {
+                return false;
+            }
+
+            // Inserir dados específicos da conta (Conta Corrente ou Conta Poupança)
+            if (conta instanceof ContaCorrente) {
+                if (!inserirContaCorrente((ContaCorrente) conta)) {
+                    return false;
+                }
+            } else if (conta instanceof ContaPoupanca) {
+                if (!inserirContaPoupanca((ContaPoupanca) conta)) {
+                    return false;
+                }
+            }
+
+            conexao.commit();  // Commit da transação
+            return true;
+        } catch (SQLException e) {
+            try {
+                conexao.rollback();  // Rollback em caso de erro
+            } catch (SQLException rollbackEx) {
+                System.err.println("Erro ao reverter transação: " + rollbackEx.getMessage());
+            }
+            System.err.println("Erro ao cadastrar conta: " + e.getMessage());
+            return false;
+        } finally {
+            try {
+                conexao.setAutoCommit(true);  // Restaura o comportamento padrão de auto-commit
+            } catch (SQLException autoCommitEx) {
+                System.err.println("Erro ao restaurar auto-commit: " + autoCommitEx.getMessage());
+            }
+        }
+    }
+
+    // Inserir dados do cliente no banco de dados
+    private boolean inserirCliente(Cliente cliente) throws SQLException {
+        String sql = "INSERT INTO cliente (usuario_id) VALUES (?)";
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            stmt.setInt(1, cliente.getId());
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
+    // Inserir dados da conta no banco de dados
+    private boolean inserirConta(Conta conta, Cliente cliente) throws SQLException {
+        String sql = "INSERT INTO conta (numero_conta, agencia, saldo, tipo_conta, cliente_id) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            stmt.setDouble(1, conta.getNumero());
+            stmt.setString(2, conta.getAgencia());
+            stmt.setDouble(3, conta.getSaldo());
+            stmt.setString(4, conta instanceof ContaCorrente ? "corrente" : "poupanca");
+            stmt.setInt(5, cliente.getId());
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
+    // Inserir dados específicos da Conta Corrente
+    private boolean inserirContaCorrente(ContaCorrente contaCorrente) throws SQLException {
+        String sql = "INSERT INTO conta_corrente (limite, data_vencimento, conta_id) VALUES (?, ?, LAST_INSERT_ID())";
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            stmt.setDouble(1, contaCorrente.getLimite());
+            stmt.setDate(2, java.sql.Date.valueOf(contaCorrente.getDataVencimento()));
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
+    // Inserir dados específicos da Conta Poupança
+    private boolean inserirContaPoupanca(ContaPoupanca contaPoupanca) throws SQLException {
+        String sql = "INSERT INTO conta_poupanca (taxa_rendimento, conta_id) VALUES (?, LAST_INSERT_ID())";
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            stmt.setDouble(1, contaPoupanca.getTaxaRendimento());
+            return stmt.executeUpdate() > 0;
         }
     }
 }

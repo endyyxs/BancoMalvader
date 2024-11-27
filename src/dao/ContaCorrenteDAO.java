@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 import model.Cliente;
+import model.Conta;
+import model.ContaCorrente;
 import util.DBUtil;
 
 public class ContaCorrenteDAO extends ContaDAO {
@@ -55,7 +57,11 @@ public class ContaCorrenteDAO extends ContaDAO {
 
     @Override
     public List<String> consultarExtrato(Cliente cliente) {
-        // Utiliza o método da classe base (ContaDAO) para consultar o extrato
+        // Adicione lógica específica para ContaCorrente, se necessário
+        System.out.println("Consultando extrato para conta corrente");
+        
+        // Chama o método da classe base (ContaDAO)
         return super.consultarExtrato(cliente);
     }
 }
+

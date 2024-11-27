@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import model.Cliente;
+import model.Conta;
 import model.ContaPoupanca;
 import util.DBUtil;
 
@@ -17,27 +19,23 @@ public class ContaPoupancaDAO extends ContaDAO {
     }
 
     // Buscar conta poupança no banco de dados
-    public ContaPoupanca buscarContaPoupanca(String numeroConta) throws SQLException {
-        String sql = "SELECT c.id_conta, c.numero_conta, c.agencia, c.saldo, cp.taxa_rendimento, c.cliente_id " +
-                     "FROM conta c " +
-                     "JOIN conta_poupanca cp ON c.id_conta = cp.conta_id " +
-                     "WHERE c.numero_conta = ?";
-
+    public ContaPoupanca buscarContaPoupanca(int numeroConta) throws SQLException {
+        String sql = "SELECT * FROM conta WHERE numero_conta = ?";
         try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
-            stmt.setString(1, numeroConta); // numero_conta is a varchar(20), so use setString
+            stmt.setInt(1, numeroConta);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     double saldo = rs.getDouble("saldo");
-                    double taxaRendimento = rs.getDouble("taxa_rendimento");
-                    String numero = rs.getString("numero_conta"); // Correctly fetch as String
+                    int numero = rs.getInt("numero_conta");
                     String agencia = rs.getString("agencia");
                     int idCliente = rs.getInt("cliente_id");
 
                     // Buscar o cliente associado
-                    Cliente cliente = buscarClientePorId(idCliente); // Assuming you have a method to get a Client by ID
+                    ClienteDAO clienteDAO = new ClienteDAO();
+                    Cliente cliente = clienteDAO.buscarPorId(idCliente);
 
                     // Criar e retornar a conta poupança
-                    return new ContaPoupanca(numero, agencia, saldo, cliente, taxaRendimento);
+                    return new ContaPoupanca(numero, agencia, saldo, cliente, 0.0); // taxa_rendimento pode ser definido posteriormente
                 } else {
                     return null; // Conta não encontrada
                 }
@@ -45,27 +43,58 @@ public class ContaPoupancaDAO extends ContaDAO {
         }
     }
 
-    // Assuming you have a method to fetch client details by id
-    private Cliente buscarClientePorId(int idCliente) throws SQLException {
-        String sql = "SELECT id_usuario, nome, cpf, data_nascimento, telefone, tipo_usuario " +
-                     "FROM usuario WHERE id_usuario = (SELECT usuario_id FROM cliente WHERE id_cliente = ?)";
-        
-        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
-            stmt.setInt(1, idCliente);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    Cliente cliente = new Cliente();
-                    cliente.setId(idCliente);
-                    cliente.setNome(rs.getString("nome"));
-                    cliente.setCpf(rs.getString("cpf"));
-                    cliente.setDataNascimento(rs.getDate("data_nascimento"));
-                    cliente.setTelefone(rs.getString("telefone"));
-                    cliente.setTipoUsuario(rs.getString("tipo_usuario"));
-                    return cliente;
+    // Método para salvar a conta poupança no banco de dados
+    public void salvar(ContaPoupanca contaPoupanca) throws SQLException {
+        // Garantir que o cliente foi salvo antes
+        if (contaPoupanca.getCliente().getId() == 0) {
+            ClienteDAO clienteDAO = new ClienteDAO();
+            clienteDAO.salvar(contaPoupanca.getCliente());
+        }
+
+        String sqlConta = "INSERT INTO conta (numero_conta, agencia, saldo, cliente_id) VALUES (?, ?, ?, ?)";
+        String sqlPoupanca = "INSERT INTO conta_poupanca (conta_id, taxa_rendimento) VALUES (?, ?)";
+        try (PreparedStatement stmtConta = conexao.prepareStatement(sqlConta, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            stmtConta.setInt(1, contaPoupanca.getNumero());
+            stmtConta.setString(2, contaPoupanca.getAgencia());
+            stmtConta.setDouble(3, contaPoupanca.getSaldo());
+            stmtConta.setInt(4, contaPoupanca.getCliente().getId());
+
+            stmtConta.executeUpdate();
+
+            // Obter o ID da conta gerada
+            ResultSet generatedKeys = stmtConta.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int idConta = generatedKeys.getInt(1);
+
+                // Agora, salvar as informações específicas da conta poupança
+                try (PreparedStatement stmtPoupanca = conexao.prepareStatement(sqlPoupanca)) {
+                    stmtPoupanca.setInt(1, idConta);
+                    stmtPoupanca.setDouble(2, contaPoupanca.getTaxaRendimento());
+                    stmtPoupanca.executeUpdate();
                 }
             }
+
+            // Confirmar transação
+            conexao.commit();
+        } catch (SQLException e) {
+            try {
+                if (conexao != null) {
+                    conexao.rollback(); // Desfaz alterações
+                }
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
+            throw new SQLException("Erro ao salvar a conta poupança no banco de dados.", e);
+        } finally {
+            // Certifique-se de fechar a conexão
+            try {
+                if (conexao != null) {
+                    conexao.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-        return null;
     }
 
     // Herda e utiliza os métodos da classe ContaDAO
@@ -89,4 +118,3 @@ public class ContaPoupancaDAO extends ContaDAO {
         return super.consultarExtrato(cliente);
     }
 }
-
