@@ -11,6 +11,7 @@ import model.Cliente;
 public class ClienteController {
 	private ClienteDAO DAO;
 	
+	
 	 // Construtor que recebe o ClienteDAO, para poder realizar as operações no banco
 	public ClienteController() {
 		this.DAO = new ClienteDAO();
@@ -22,9 +23,10 @@ public class ClienteController {
     }
 	
 	 // Método para salvar um cliente no banco de dados
-    public void salvarCliente(Cliente cliente) {
+    public void salvar(Cliente cliente) {
         try {
-            ClienteDAO.salvar(cliente);  // Chama o método salvar do DAO
+        	ClienteDAO clienteDAO = new ClienteDAO();
+			clienteDAO.salvar(cliente);  // Chama o método salvar do DAO
             System.out.println("Cliente cadastrado com sucesso!");
         } catch (Exception e) {
             System.out.println("Erro ao salvar cliente: " + e.getMessage());
@@ -32,9 +34,10 @@ public class ClienteController {
     }
 
     // Método para buscar um cliente pelo ID
-    public Cliente buscarClientePorId(int id) {
+    public Cliente buscarClientePorId(int idCliente) {
         try {
-            return ClienteDAO.buscarPorId(id);  // Chama o método buscarPorId do DAO
+        	ClienteDAO clienteDAO = new ClienteDAO();
+            return clienteDAO.buscarPorId(idCliente);  // Chama o método buscarPorId do DAO
         } catch (Exception e) {
             System.out.println("Erro ao buscar cliente: " + e.getMessage());
             return null;
@@ -44,7 +47,8 @@ public class ClienteController {
     // Método para atualizar as informações de um cliente
     public void atualizarCliente(Cliente cliente) {
         try {
-            ClienteDAO.atualizar(cliente);  // Chama o método atualizar do DAO
+            ClienteDAO clienteDAO2 = new ClienteDAO();
+			clienteDAO2.atualizar(cliente);  // Chama o método atualizar do DAO
             System.out.println("Cliente atualizado com sucesso!");
         } catch (Exception e) {
             System.out.println("Erro ao atualizar cliente: " + e.getMessage());
@@ -54,7 +58,8 @@ public class ClienteController {
     // Método para excluir um cliente do banco
     public void excluirCliente(int id) {
         try {
-            ClienteDAO.excluir(id);  // Chama o método excluir do DAO
+            ClienteDAO clienteDAO = new ClienteDAO();
+			clienteDAO.excluir(id);  // Chama o método excluir do DAO
             System.out.println("Cliente excluído com sucesso!");
         } catch (Exception e) {
             System.out.println("Erro ao excluir cliente: " + e.getMessage());

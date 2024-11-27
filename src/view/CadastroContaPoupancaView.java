@@ -75,38 +75,50 @@ public class CadastroContaPoupancaView extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     // Capturar e validar os dados
-                    if (agenciaField.getText().isEmpty() || numeroContaField.getText().isEmpty() || nomeClienteField.getText().isEmpty()) {
-                        JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios!", "Erro", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
+                	// Capturar e validar os dados
+                	if (agenciaField.getText().isEmpty() || numeroContaField.getText().isEmpty() || nomeClienteField.getText().isEmpty()) {
+                	    JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios!", "Erro", JOptionPane.ERROR_MESSAGE);
+                	    return;
+                	}
 
-                    // Criar cliente e conta poupança
-                    Endereco endereco = new Endereco();
+                	LocalDate dataNascimento = null;
+                	try {
+                	    // Tenta converter a data para LocalDate no formato yyyy-MM-dd
+                	    dataNascimento = LocalDate.parse(dataNascimentoField.getText()); // Formato esperado: yyyy-MM-dd
+                	} catch (Exception ex) {
+                	    // Caso a data não esteja no formato correto
+                	    JOptionPane.showMessageDialog(null, "Data de nascimento inválida! Use o formato yyyy-MM-dd.", "Erro", JOptionPane.ERROR_MESSAGE);
+                	    return;
+                	}
 
-                    Cliente cliente = new Cliente(
-                        0,
-                        nomeClienteField.getText(),
-                        cpfField.getText(),
-                        LocalDate.parse(dataNascimentoField.getText()), // Formato esperado: yyyy-MM-dd
-                        telefoneField.getText(),
-                        endereco
-                    );
+                	// Criar cliente e conta poupança
+                	Endereco endereco = new Endereco();
 
-                    ContaPoupanca contaPoupanca = new ContaPoupanca(
-                        Integer.parseInt(numeroContaField.getText()),
-                        agenciaField.getText(),
-                        0.0, // Saldo inicial
-                        cliente,
-                        0.05 // Taxa de rendimento
-                    );
+                	Cliente cliente = new Cliente(
+                	    0,
+                	    nomeClienteField.getText(),
+                	    cpfField.getText(),
+                	    dataNascimento, // Passa o LocalDate validado
+                	    telefoneField.getText(),
+                	    endereco
+                	);
 
-                    // Salvar no banco
-                    ContaPoupancaDAO contaPoupancaDAO = new ContaPoupancaDAO();
-                    ContaPoupancaController contaPoupancaController = new ContaPoupancaController(contaPoupancaDAO);
-                    contaPoupancaController.salvarContaPoupanca(contaPoupanca);
+                	ContaPoupanca contaPoupanca = new ContaPoupanca(
+                	    Integer.parseInt(numeroContaField.getText()),
+                	    agenciaField.getText(),
+                	    0.0, // Saldo inicial
+                	    cliente,
+                	    0.05 // Taxa de rendimento
+                	);
 
-                    JOptionPane.showMessageDialog(null, "Conta poupança cadastrada com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-                    dispose(); // Fechar janela
+                	// Salvar no banco
+                	ContaPoupancaDAO contaPoupancaDAO = new ContaPoupancaDAO();
+                	ContaPoupancaController contaPoupancaController = new ContaPoupancaController(contaPoupancaDAO);
+                	contaPoupancaController.salvarContaPoupanca(contaPoupanca);
+
+                	JOptionPane.showMessageDialog(null, "Conta poupança cadastrada com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                	dispose(); // Fechar janela
+
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(null, "Erro ao cadastrar conta poupança: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);

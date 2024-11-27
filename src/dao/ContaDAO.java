@@ -94,6 +94,7 @@ public class ContaDAO {
     // Método específico para cadastrar Conta Corrente
 	public boolean cadastrarContaCorrente(ContaCorrente contaCorrente, Cliente cliente) {
         String sqlCliente = "INSERT INTO cliente (usuario_id) VALUES (?)";
+        String sqlUsuario = "INSERT INTO usuario (data_nascimento) VALUES (?)";
         String sqlConta = "INSERT INTO conta (numero_conta, agencia, saldo, tipo_conta, cliente_id) VALUES (?, ?, ?, ?, LAST_INSERT_ID())";
         String sqlContaCorrente = "INSERT INTO conta_corrente (limite, data_vencimento, conta_id) VALUES (?, ?, LAST_INSERT_ID())";
 
@@ -105,6 +106,11 @@ public class ContaDAO {
             try (PreparedStatement stmtCliente = conexao.prepareStatement(sqlCliente)) {
                 stmtCliente.setInt(1, cliente.getId());
                 stmtCliente.executeUpdate();
+            }
+            
+            try (PreparedStatement stmtUsuario = conexao.prepareStatement(sqlUsuario)) {
+            	stmtUsuario.setDate(1, java.sql.Date.valueOf(cliente.getDataNascimento()));
+            	stmtUsuario.executeUpdate();
             }
 
             // Inserir a conta
@@ -147,6 +153,7 @@ public class ContaDAO {
     // Método para cadastrar uma conta poupança
     public boolean cadastrarContaPoupanca(ContaPoupanca contaPoupanca, Cliente cliente) {
         String sqlCliente = "INSERT INTO cliente (usuario_id) VALUES (?)";
+        String sqlUsuario = "INSERT INTO usuario (data_nascimento) VALUES (?)";
         String sqlConta = "INSERT INTO conta (numero_conta, agencia, saldo, tipo_conta, cliente_id) VALUES (?, ?, ?, ?, LAST_INSERT_ID())";
         String sqlContaPoupanca = "INSERT INTO conta_poupanca (taxa_rendimento, conta_id) VALUES (?, LAST_INSERT_ID())";
 
@@ -158,6 +165,11 @@ public class ContaDAO {
             try (PreparedStatement stmtCliente = conexao.prepareStatement(sqlCliente)) {
                 stmtCliente.setInt(1, cliente.getId());
                 stmtCliente.executeUpdate();
+            }
+            
+            try (PreparedStatement stmtUsuario = conexao.prepareStatement(sqlUsuario)) {
+            	stmtUsuario.setDate(1, java.sql.Date.valueOf(cliente.getDataNascimento()));
+            	stmtUsuario.executeUpdate();
             }
 
             // Inserir a conta

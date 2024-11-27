@@ -5,6 +5,8 @@ import model.Endereco;
 import util.DBUtil;
 import java.sql.*;
 
+import javax.swing.JPasswordField;
+
 public class ClienteDAO {
 
     private Connection conexao;
@@ -14,7 +16,7 @@ public class ClienteDAO {
     }
 
     public void salvar(Cliente cliente) throws SQLException {
-        String sql = "INSERT INTO clientes (nome, cpf) VALUES (?, ?)";
+        String sql = "INSERT INTO usuario (nome, cpf) VALUES (?, ?)";
         try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
             stmt.setString(1, cliente.getNome());
             stmt.setString(2, cliente.getCpf());
@@ -23,7 +25,7 @@ public class ClienteDAO {
     }
     
     private Endereco buscarEndereco(int idCliente) throws SQLException {
-        String sql = "SELECT * FROM enderecos WHERE id_cliente = ?";
+        String sql = "SELECT * FROM endereco WHERE id_cliente = ?";
         try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
             stmt.setInt(1, idCliente);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -38,7 +40,7 @@ public class ClienteDAO {
 
 
     public Cliente buscarPorId(int id) throws SQLException {
-        String sql = "SELECT * FROM clientes WHERE id = ?";
+        String sql = "SELECT * FROM usuario WHERE id = ?";
         try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -62,7 +64,7 @@ public class ClienteDAO {
 
 
     public void atualizar(Cliente cliente) throws SQLException {
-        String sql = "UPDATE clientes SET nome = ?, cpf = ? WHERE id = ?";
+        String sql = "UPDATE usuario SET nome = ?, cpf = ? WHERE id = ?";
         try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
             stmt.setString(1, cliente.getNome());
             stmt.setString(2, cliente.getCpf());
@@ -72,14 +74,14 @@ public class ClienteDAO {
     }
 
     public void excluir(int id) throws SQLException {
-        String sql = "DELETE FROM clientes WHERE id = ?";
+        String sql = "DELETE FROM usuario WHERE id = ?";
         try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
         }
     }
 
-	public static Cliente autenticarSenha(String senha) {
+	public static Cliente autenticarSenha(JPasswordField senha) {
 		// TODO Auto-generated method stub
 		return null;
 	}
