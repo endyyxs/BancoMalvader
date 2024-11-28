@@ -13,12 +13,11 @@ import model.ContaPoupanca;
 import model.Funcionario;
 
 public class BancoController {
-    private List<Conta> contas; // Lista de contas em memória
-    private List<Funcionario> funcionarios; // Lista de funcionários em memória
+    private List<Conta> contas; 
+    private List<Funcionario> funcionarios; 
     private FuncionarioDAO funcionarioDAO;
     private ContaDAO contaDAO;
 
-    // Construtor recebe a conexão com o banco de dados
     public BancoController(Connection connection) {
         this.contas = new ArrayList<>();
         this.funcionarios = new ArrayList<>();
@@ -28,14 +27,12 @@ public class BancoController {
 
     public void adicionarConta(Conta conta, Cliente cliente) {
         try {
-            // Verificar se a conta já existe localmente
             if (contas.stream().anyMatch(c -> c.getNumero() == conta.getNumero())) {
                 System.err.println("Conta já existe localmente: " + conta.getNumero());
                 return;
             }
 
             boolean sucesso = false;
-            // Chama o método adequado para o tipo de conta
             if (conta instanceof ContaCorrente) {
                 sucesso = contaDAO.cadastrarConta((ContaCorrente) conta, cliente);
             } else if (conta instanceof ContaPoupanca) {
@@ -45,9 +42,7 @@ public class BancoController {
                 return;
             }
 
-            // Verifica se o cadastro foi bem-sucedido
             if (sucesso) {
-                // Adicionar na lista local caso a conta tenha sido cadastrada com sucesso
                 this.contas.add(conta);
                 System.out.println("Conta adicionada localmente e salva no banco: " + conta.getNumero());
             } else {
@@ -59,19 +54,16 @@ public class BancoController {
         }
     }
 
-    // Remover uma conta da lista local
     public void removerConta(int numeroConta) {
         contas.removeIf(c -> c.getNumero() == numeroConta);
         System.out.println("Conta removida localmente: " + numeroConta);
     }
 
-    // Adicionar um funcionário na lista local
     public void adicionarFuncionarioLocal(Funcionario funcionario) {
         this.funcionarios.add(funcionario);
         System.out.println("Funcionário adicionado localmente: " + funcionario.getNome());
     }
 
-    // Listar todas as contas locais
     public void listarContasLocais() {
         if (contas.isEmpty()) {
             System.out.println("Nenhuma conta cadastrada localmente.");
@@ -82,7 +74,6 @@ public class BancoController {
         }
     }
 
-    // Listar todos os funcionários locais
     public void listarFuncionariosLocais() {
         if (funcionarios.isEmpty()) {
             System.out.println("Nenhum funcionário cadastrado localmente.");
@@ -93,7 +84,6 @@ public class BancoController {
         }
     }
 
-    // Persistir os funcionários locais no banco de dados
     public void salvarFuncionariosNoBanco() {
         for (Funcionario funcionario : funcionarios) {
             try {
@@ -105,11 +95,10 @@ public class BancoController {
         }
     }
 
-    // Métodos de interação com o DAO (já implementados antes)
     public void cadastrarFuncionario(Funcionario funcionario) {
         try {
             funcionarioDAO.cadastrarFuncionario(funcionario);
-            this.funcionarios.add(funcionario); // Também adiciona à lista local
+            this.funcionarios.add(funcionario);
             System.out.println("Funcionário cadastrado no banco e na lista local.");
         } catch (Exception e) {
             System.err.println("Erro ao cadastrar funcionário: " + e.getMessage());
@@ -137,7 +126,7 @@ public class BancoController {
     public void excluirFuncionario(int id) {
         try {
             funcionarioDAO.excluirFuncionario(id);
-            funcionarios.removeIf(f -> f.getId() == id); // Remove da lista local também
+            funcionarios.removeIf(f -> f.getId() == id);
             System.out.println("Funcionário excluído do banco e da lista local.");
         } catch (Exception e) {
             System.err.println("Erro ao excluir funcionário: " + e.getMessage());
