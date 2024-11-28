@@ -12,9 +12,7 @@ public class ContaCorrenteController extends ContaController {
         super(dao);
     }
 
-    // Método específico para consultar o limite da conta corrente
     public double consultarLimite(Cliente cliente) {
-        // Verifica se o DAO é do tipo ContaCorrenteDAO
         if (dao instanceof ContaCorrenteDAO) {
             try {
                 return ((ContaCorrenteDAO) dao).consultarLimite(cliente);
