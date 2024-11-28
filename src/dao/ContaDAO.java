@@ -198,7 +198,7 @@ public class ContaDAO {
     }
     
     private boolean inserirCliente(Cliente cliente) {
-        String sql = "INSERT INTO cliente (id_usuario) VALUES (LAST_INSERT_ID())";
+        String sql = "INSERT INTO cliente (usuario_id) VALUES (LAST_INSERT_ID())";
         
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.executeUpdate();
@@ -213,7 +213,7 @@ public class ContaDAO {
 
     
     private boolean inserirConta(Conta conta, Cliente cliente) {
-        String sql = "INSERT INTO conta (numero_conta, agencia, saldo, tipo_conta, id_cliente) VALUES (?, ?, ?, ?, LAST_INSERT_ID())";
+        String sql = "INSERT INTO conta (numero_conta, agencia, saldo, tipo_conta, cliente_id) VALUES (?, ?, ?, ?, LAST_INSERT_ID())";
         
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, conta.getNumero());
@@ -233,7 +233,7 @@ public class ContaDAO {
 
     
     private boolean inserirContaCorrente(ContaCorrente contaCorrente) {
-        String sql = "INSERT INTO conta_corrente (limite, data_vencimento, id_conta) VALUES (?, ?, LAST_INSERT_ID())";
+        String sql = "INSERT INTO conta_corrente (limite, data_vencimento, conta_id) VALUES (?, ?, LAST_INSERT_ID())";
         
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setDouble(1, contaCorrente.getLimite());
@@ -250,7 +250,7 @@ public class ContaDAO {
     }
     
     private boolean inserirContaPoupanca(ContaPoupanca contaPoupanca) {
-        String sql = "INSERT INTO conta_poupanca (taxa_rendimento, id_conta) VALUES (?, LAST_INSERT_ID())";
+        String sql = "INSERT INTO conta_poupanca (taxa_rendimento, conta_id) VALUES (?, LAST_INSERT_ID())";
         
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setDouble(1, contaPoupanca.getTaxaRendimento());
@@ -265,7 +265,7 @@ public class ContaDAO {
     }      
         
         public void salvar(Conta conta) throws Exception {
-            String sql = "INSERT INTO conta (numero_conta, saldo, agencia, id_cliente) VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO conta (numero_conta, saldo, agencia, cliente_id) VALUES (?, ?, ?, ?)";
             try (Connection conn = DBUtil.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setInt(1, conta.getNumero());
                 stmt.setDouble(2, conta.getSaldo());
@@ -277,5 +277,3 @@ public class ContaDAO {
             }
         }
     }
-
-

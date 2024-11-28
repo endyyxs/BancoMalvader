@@ -13,7 +13,7 @@ public class LoginFuncionarioDAO {
     
     // Método para validar o login do funcionário
     public boolean validarLogin(String usuario, String senha) {
-        String sql = "SELECT senha, salt FROM usuarios WHERE usuario = ?";
+        String sql = "SELECT senha, salt FROM usuario WHERE usuario = ?";
         
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

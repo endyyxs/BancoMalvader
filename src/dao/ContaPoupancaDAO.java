@@ -35,7 +35,7 @@ public class ContaPoupancaDAO extends ContaDAO {
                     Cliente cliente = clienteDAO.buscarPorId(idCliente);
 
                     // Criar e retornar a conta poupança
-                    return new ContaPoupanca(numero, agencia, saldo, cliente, 0.0); // taxa_rendimento pode ser definido posteriormente
+                    return new ContaPoupanca(numero, agencia, saldo, 0.0); // taxa_rendimento pode ser definido posteriormente
                 } else {
                     return null; // Conta não encontrada
                 }
@@ -46,9 +46,9 @@ public class ContaPoupancaDAO extends ContaDAO {
     // Método para salvar a conta poupança no banco de dados
     public void salvar(ContaPoupanca contaPoupanca) throws SQLException {
         // Garantir que o cliente foi salvo antes
-        if (contaPoupanca.getCliente().getId() == 0) {
+        if (contaPoupanca.getClass().getId() == 0) {
             ClienteDAO clienteDAO = new ClienteDAO();
-            clienteDAO.salvar(contaPoupanca.getCliente());
+            clienteDAO.salvar(contaPoupanca.getClass());
         }
 
         String sqlConta = "INSERT INTO conta (numero_conta, agencia, saldo, cliente_id) VALUES (?, ?, ?, ?)";
@@ -57,7 +57,7 @@ public class ContaPoupancaDAO extends ContaDAO {
             stmtConta.setInt(1, contaPoupanca.getNumero());
             stmtConta.setString(2, contaPoupanca.getAgencia());
             stmtConta.setDouble(3, contaPoupanca.getSaldo());
-            stmtConta.setInt(4, contaPoupanca.getCliente().getId());
+            stmtConta.setInt(4, contaPoupanca.getClass().getId());
 
             stmtConta.executeUpdate();
 

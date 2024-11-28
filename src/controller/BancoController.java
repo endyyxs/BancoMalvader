@@ -22,7 +22,7 @@ public class BancoController {
     public BancoController(Connection connection) {
         this.contas = new ArrayList<>();
         this.funcionarios = new ArrayList<>();
-        this.funcionarioDAO = new FuncionarioDAO(connection);
+        this.funcionarioDAO = new FuncionarioDAO();
         this.contaDAO = new ContaDAO(); // Inicializando o ContaDAO também
     }
 
