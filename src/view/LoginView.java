@@ -34,8 +34,9 @@ public class LoginView extends JFrame {
 		LoginFuncionarioView loginfuncionario = new LoginFuncionarioView();
 		loginfuncionario.setVisible(true);
 		dispose();
-	   } 
-	  }); 
+	   }
+	  });
+	  
 	  botaofuncionario.setFont(new Font("Tahoma", Font.BOLD, 12)); 
 	  botaofuncionario.setBounds(251, 195, 154, 34); 
 	  getContentPane().add(botaofuncionario); 
@@ -68,12 +69,10 @@ public class LoginView extends JFrame {
 	  
 	 } 
 	  
-	 
 	 public static void main(String[] args) { 
 	  SwingUtilities.invokeLater(() -> { 
 	   LoginView frame = new LoginView(); 
 	   frame.setVisible(true); 
 	  }); 
-	 
 	 } 
 	}

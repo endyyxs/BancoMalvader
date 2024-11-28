@@ -5,6 +5,7 @@ import controller.ContaPoupancaController;
 import model.Cliente;
 import model.ContaPoupanca;
 import model.Endereco;
+import model.Usuario;
 import dao.ContaPoupancaDAO;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -13,12 +14,11 @@ import java.time.LocalDate;
 
 public class CadastroContaPoupancaView extends JFrame {
     private static final long serialVersionUID = 1L;
-
-   
+    
     private JTextField agenciaField;
     private JTextField numeroContaField;
-    private JTextField nomeClienteField;
-    private JTextField cpfField;
+    private JTextField nomeField;
+    private JTextField CPFField;
     private JTextField dataNascimentoField;
     private JTextField telefoneField;
     private JTextField enderecoField;
@@ -33,23 +33,21 @@ public class CadastroContaPoupancaView extends JFrame {
     public CadastroContaPoupancaView() {
         super("Cadastro Conta Poupança");
 
-        getContentPane().setBackground(new Color(252, 214, 247)); // cor de fundo
-        this.setSize(600, 650); // tamanho da tela
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // operação de fechamento
-        getContentPane().setLayout(null); // layout nulo para posicionamento absoluto
-        this.setLocationRelativeTo(null); // centraliza na tela
+        getContentPane().setBackground(new Color(252, 214, 247)); 
+        this.setSize(600, 650); 
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
+        getContentPane().setLayout(null); 
+        this.setLocationRelativeTo(null); 
 
-        // Título da tela
         JLabel label = new JLabel("Cadastro de Cliente - Conta Poupança");
         label.setFont(new Font("Tahoma", Font.BOLD, 18));
         label.setBounds(140, 20, 350, 30);
         getContentPane().add(label);
-
-        // Campos para os dados pessoais
+        
         addLabeledField("Agência:", 50, 60, 150, agenciaField = new JTextField());
         addLabeledField("Número da Conta:", 50, 100, 150, numeroContaField = new JTextField());
-        addLabeledField("Nome do Cliente:", 50, 140, 150, nomeClienteField = new JTextField());
-        addLabeledField("CPF:", 50, 180, 150, cpfField = new JTextField());
+        addLabeledField("Nome do Cliente:", 50, 140, 150, nomeField = new JTextField());
+        addLabeledField("CPF:", 50, 180, 150, CPFField = new JTextField());
         addLabeledField("Data de Nascimento:", 50, 220, 150, dataNascimentoField = new JTextField());
         addLabeledField("Telefone:", 50, 260, 150, telefoneField = new JTextField());
         addLabeledField("Endereço:", 50, 300, 150, enderecoField = new JTextField());
@@ -59,66 +57,56 @@ public class CadastroContaPoupancaView extends JFrame {
         addLabeledField("Bairro:", 50, 460, 150, bairroField = new JTextField());
         addLabeledField("Cidade:", 50, 500, 150, cidadeField = new JTextField());
         addLabeledField("Estado:", 50, 540, 150, estadoField = new JTextField());
-
-        // Campo para a senha
-        JLabel senhaLabel = new JLabel("Senha da Conta:");
-        senhaLabel.setBounds(50, 580, 150, 20);
-        getContentPane().add(senhaLabel);
-
-        senhaField = new JPasswordField();
-        senhaField.setBounds(200, 580, 200, 20);
-        getContentPane().add(senhaField);
+        addLabeledField("Senha da Conta", 50, 580, 200, senhaField = new JPasswordField());
         
         JButton enviarButton = new JButton("Enviar");
         enviarButton.setBounds(200, 620, 100, 30);
+        
         enviarButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    // Capturar e validar os dados
-                	// Capturar e validar os dados
-                	if (agenciaField.getText().isEmpty() || numeroContaField.getText().isEmpty() || nomeClienteField.getText().isEmpty()) {
+                	String nome = nomeField.getText();
+                	String agencia = agenciaField.getText();
+                	String conta = numeroContaField.getText();
+                	String CPF = CPFField.getText();
+                	String telefone = telefoneField.getText();
+                	Endereco endereco = new Endereco();
+                	String senha = senhaField.getText();
+                	
+                	if (agencia.isEmpty() || conta.isEmpty() || nome.isEmpty()) {
                 	    JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios!", "Erro", JOptionPane.ERROR_MESSAGE);
                 	    return;
                 	}
-
+                	
                 	LocalDate dataNascimento = null;
+            
                 	try {
-                	    // Tenta converter a data para LocalDate no formato yyyy-MM-dd
-                	    dataNascimento = LocalDate.parse(dataNascimentoField.getText()); // Formato esperado: yyyy-MM-dd
+                		dataNascimento = LocalDate.parse(dataNascimentoField.getText()); 
                 	} catch (Exception ex) {
-                	    // Caso a data não esteja no formato correto
                 	    JOptionPane.showMessageDialog(null, "Data de nascimento inválida! Use o formato yyyy-MM-dd.", "Erro", JOptionPane.ERROR_MESSAGE);
                 	    return;
                 	}
 
-                	// Criar cliente e conta poupança
-                	Endereco endereco = new Endereco();
-
                 	Cliente cliente = new Cliente(
                 	    0,
-                	    nomeClienteField.getText(),
-                	    cpfField.getText(),
-                	    dataNascimento, // Passa o LocalDate validado
-                	    telefoneField.getText(),
-                	    endereco
+                	    nome,
+                	    CPF,
+                	    dataNascimento, 
+                	    telefone,
+                	    endereco,
+                	    senha
                 	);
-
+                	
                 	ContaPoupanca contaPoupanca = new ContaPoupanca(
-                	    Integer.parseInt(numeroContaField.getText()),
-                	    agenciaField.getText(),
-                	    0.0, // Saldo inicial
-                	    cliente,
-                	    0.05 // Taxa de rendimento
+                	    Integer.parseInt(conta),
+                	    agencia,
+                	    0.0,
+                	    0.05
                 	);
 
-                	// Salvar no banco
                 	ContaPoupancaDAO contaPoupancaDAO = new ContaPoupancaDAO();
                 	ContaPoupancaController contaPoupancaController = new ContaPoupancaController(contaPoupancaDAO);
-                	contaPoupancaController.salvarContaPoupanca(contaPoupanca);
-
-                	JOptionPane.showMessageDialog(null, "Conta poupança cadastrada com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-                	dispose(); // Fechar janela
-
+                	contaPoupancaController.salvarContaPoupanca(contaPoupanca, cliente);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(null, "Erro ao cadastrar conta poupança: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
@@ -127,20 +115,20 @@ public class CadastroContaPoupancaView extends JFrame {
         });
         getContentPane().add(enviarButton);
 
-        // Botão Voltar
+        
         JButton voltarButton = new JButton("Voltar");
         voltarButton.setBounds(320, 620, 100, 30);
         voltarButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 MenuFuncionarioView menuFuncionarioView = new MenuFuncionarioView();
                 menuFuncionarioView.setVisible(true);
-                dispose(); // Fecha a janela atual
+                dispose(); 
             }
         });
         getContentPane().add(voltarButton);
     }
 
-    // Método para criar o campo com label
+    
     private void addLabeledField(String labelText, int x, int y, int width, JTextField field) {
         JLabel label = new JLabel(labelText);
         label.setBounds(x, y, 150, 20);
@@ -154,9 +142,8 @@ public class CadastroContaPoupancaView extends JFrame {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new CadastroContaPoupancaView().setVisible(true); // Tornar a janela visível
+                new CadastroContaPoupancaView().setVisible(true); 
             }
         });
-        
     }
 }

@@ -2,6 +2,8 @@ package controller;
 
 import java.util.List;
 import javax.swing.JOptionPane;
+
+import dao.ClienteDAO;
 import dao.ContaPoupancaDAO;
 import model.Cliente;
 import model.ContaPoupanca;
@@ -37,18 +39,22 @@ public class ContaPoupancaController extends ContaController {
     }
 
     // Método para salvar uma nova conta poupança no banco de dados
-    public void salvarContaPoupanca(ContaPoupanca contaPoupanca) {
+    public void salvarContaPoupanca(ContaPoupanca contaPoupanca, Cliente cliente) {
         try {
-            // Validação da conta antes de salvar
+            /*
             if (contaPoupanca.getSaldo() <= 0 || contaPoupanca.getNumero() <= 0) {
                 JOptionPane.showMessageDialog(null, "A conta precisa ter um número válido e saldo positivo!");
                 return;
             }
+            */
 
-            super.dao.salvar(contaPoupanca);  // Chamando o método do DAO para salvar a conta no banco
-            JOptionPane.showMessageDialog(null, "Conta Poupança cadastrada com sucesso!");
+        	if(super.dao.cadastrarConta(contaPoupanca, cliente)) {
+        		JOptionPane.showMessageDialog(null, "Conta Poupança cadastrada com sucesso!");
+        	} else {
+        		JOptionPane.showMessageDialog(null, "Erro ao cadastrar conta, tente novamente mais tarde...", "Erro", JOptionPane.ERROR_MESSAGE);
+        	}
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Erro ao salvar a conta: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Erro ao salvar a conta: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

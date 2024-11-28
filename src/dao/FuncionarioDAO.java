@@ -9,12 +9,10 @@ import util.DBUtil;
 public class FuncionarioDAO {
     private Connection connection;
 
-    // Construtor que recebe a conexão com o banco de dados
-    public FuncionarioDAO(Connection connection) {
-        this.connection = connection;
+    public FuncionarioDAO() {
+        this.connection = DBUtil.getConnection();
     }
 
-    // Método para cadastrar um novo funcionário
     public void cadastrarFuncionario(Funcionario funcionario) throws SQLException {
         String sql = "INSERT INTO funcionario (nome, cpf, data_nascimento, telefone, codigo_funcionario, cargo, senha) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -27,7 +25,7 @@ public class FuncionarioDAO {
             stmt.setString(7, funcionario.getSenha());
             stmt.executeUpdate();
 
-            // Obter o ID gerado automaticamente
+            
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     funcionario.setId(generatedKeys.getInt(1));
@@ -36,7 +34,6 @@ public class FuncionarioDAO {
         }
     }
 
-    // Método para consultar os dados de um funcionário pelo ID
     public Funcionario consultarFuncionario(int id) throws SQLException {
         String sql = "SELECT * FROM funcionario WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -49,7 +46,7 @@ public class FuncionarioDAO {
                         rs.getString("cpf"),
                         rs.getDate("data_nascimento").toLocalDate(),
                         rs.getString("telefone"),
-                        null, // O Endereco pode ser carregado de outra tabela se necessário
+                        null, 
                         rs.getString("codigo_funcionario"),
                         rs.getString("cargo"),
                         rs.getString("senha")
@@ -60,7 +57,7 @@ public class FuncionarioDAO {
         return null;
     }
 
-    // Método para atualizar os dados de um funcionário
+    
     public void alterarFuncionario(Funcionario funcionario) throws SQLException {
         String sql = "UPDATE funcionario SET nome = ?, cpf = ?, data_nascimento = ?, telefone = ?, codigo_funcionario = ?, cargo = ?, senha = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -76,7 +73,7 @@ public class FuncionarioDAO {
         }
     }
 
-    // Método para excluir um funcionário pelo ID
+    
     public void excluirFuncionario(int id) throws SQLException {
         String sql = "DELETE FROM funcionario WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -85,7 +82,7 @@ public class FuncionarioDAO {
         }
     }
 
-    // Método para listar todos os funcionários
+    
     public List<Funcionario> listarFuncionarios() throws SQLException {
         List<Funcionario> funcionarios = new ArrayList<>();
         String sql = "SELECT * FROM funcionario";
@@ -98,7 +95,7 @@ public class FuncionarioDAO {
                     rs.getString("cpf"),
                     rs.getDate("data_nascimento").toLocalDate(),
                     rs.getString("telefone"),
-                    null, // O Endereco pode ser carregado de outra tabela se necessário
+                    null, 
                     rs.getString("codigo_funcionario"),
                     rs.getString("cargo"),
                     rs.getString("senha")
@@ -109,16 +106,15 @@ public class FuncionarioDAO {
         return funcionarios;
     }
 
-    // Método para gerar um relatório de movimentações de transações
+    
     public void gerarRelatorioMovimentacao() throws SQLException {
-        // Considerando que a tabela de transações existe no banco
         String sql = "SELECT t.id_transacao, t.tipo_transacao, t.valor, t.data_hora, c.numero_conta " +
                      "FROM transacao t " +
                      "JOIN conta c ON t.conta_id = c.id_conta";
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                // Exemplo de impressão no console, pode ser modificado para salvar em um arquivo ou outro formato
+                
                 System.out.println("Transação: " + rs.getInt("id_transacao") + ", Tipo: " + rs.getString("tipo_transacao") +
                                    ", Valor: " + rs.getDouble("valor") + ", Data: " + rs.getTimestamp("data_hora") +
                                    ", Conta: " + rs.getString("numero_conta"));
