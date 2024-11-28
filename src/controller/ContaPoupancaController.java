@@ -10,18 +10,14 @@ import model.ContaPoupanca;
 
 public class ContaPoupancaController extends ContaController {
 
-    // Passando o DAO específico para ContaPoupanca no construtor da classe pai
     public ContaPoupancaController(ContaPoupancaDAO contaPoupancaDAO) {
-        super(contaPoupancaDAO);  // Chamando o construtor da classe pai (ContaController)
+        super(contaPoupancaDAO);
     }
 
-    // Método específico para calcular o rendimento da conta poupança
     public double calcularRendimento(int numeroConta) {
         try {
-            // Buscar a conta poupança do banco de dados
             ContaPoupanca contaPoupanca = (ContaPoupanca) super.dao.buscarPorNumero(numeroConta);
             if (contaPoupanca != null) {
-                // Verificar se a taxa de rendimento e saldo são válidos
                 if (contaPoupanca.getTaxaRendimento() > 0 && contaPoupanca.getSaldo() > 0) {
                     return contaPoupanca.getSaldo() * contaPoupanca.getTaxaRendimento();
                 } else {
@@ -38,7 +34,6 @@ public class ContaPoupancaController extends ContaController {
         }
     }
 
-    // Método para salvar uma nova conta poupança no banco de dados
     public void salvarContaPoupanca(ContaPoupanca contaPoupanca, Cliente cliente) {
         try {
             /*
