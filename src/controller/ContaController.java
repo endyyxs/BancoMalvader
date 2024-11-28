@@ -52,11 +52,10 @@ public abstract class ContaController {
             return operacao.executar();
         } catch (Exception e) {
             System.err.println("Erro ao realizar operação: " + e.getMessage());
-            return null;  // Ou lançar uma exceção personalizada
+            return null; 
         }
     }
 
-    // Interface funcional para operações
     @FunctionalInterface
     private interface Operacao<T> {
         T executar() throws Exception;
